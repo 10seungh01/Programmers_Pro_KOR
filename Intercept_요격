@@ -1,0 +1,50 @@
+#include <algorithm>
+#include <vector>
+#include <iostream>
+
+class route {                                                    // Definiton of Class route
+public:
+    int src;
+    int dst;
+};
+
+bool comprouteA(route r1, route r2)                             // Comparator of routes ASC
+{
+    if (r1.dst < r2.dst)
+        return true;
+    else
+        return false;
+}
+
+int filter(std::vector<route> rts)
+{
+    int init = 0;
+    std::vector<route> rv;
+    for (int i = 0; i < rts.size(); i++)
+    {
+        if (rts[i].src >= init)
+        {
+            init = rts[i].dst;
+            rv.push_back(rts[i]);
+        }
+        else
+            continue;
+    }
+    return rv.size();
+}
+
+int solution(std::vector<std::vector<int>> targets) {                   // Solution
+    int answer = 0;
+    std::vector<route> routes(targets.size());
+    
+    for (int i = 0; i < targets.size(); i++)                            // Making route vector
+    {
+        routes[i].src = targets[i][0];
+        routes[i].dst = targets[i][1];
+    }
+    
+    std::sort(routes.begin(), routes.end(), comprouteA);                // Sorting route vector ASC by dst
+    answer=filter(routes);
+    
+    return answer;
+}
