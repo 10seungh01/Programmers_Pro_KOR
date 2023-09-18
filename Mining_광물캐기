@@ -1,0 +1,127 @@
+#include <vector>
+#include <iostream>
+#include <queue>
+#include <algorithm>
+
+typedef struct Value                                                    // Definition of struct Value
+{
+    int src, dst;
+    int sum = 0;
+};
+
+bool cmpValue2(Value v1, Value v2)                                       // Comparison of struct Value
+{
+    return v1.sum > v2.sum ? true : false;
+}
+
+void Partition(std::queue<std::string>* mq, std::vector<Value>* Values, int Values_index)             // Sum of each 5 minerals fatigues and Input in the Values vector 
+{
+    std::string m;
+    int j = 0;
+    for (int i = 0; i < 5; i++)
+    {
+        if (mq->size() > 0)
+        {
+            m = mq->front();
+            mq->pop();
+            std::cout << "mq의 사이즈 : " << mq->size() << std::endl;
+            if (m == "diamond")
+                (*Values)[Values_index].sum += 25;
+            else if (m == "iron")
+                (*Values)[Values_index].sum += 5;
+            else if (m == "stone")
+                (*Values)[Values_index].sum += 1;
+            j++;
+        }
+        else break;
+    }
+    (*Values)[Values_index].src = 5 * (Values_index);
+    (*Values)[Values_index].dst = (*Values)[Values_index].src + j - 1;
+}
+
+std::string select_pic(std::vector<int>* picks)                         // Selecting pick function
+{
+    if ((*picks)[0] > 0)
+    {
+        (*picks)[0]--; return "diamond";
+    }
+    else if ((*picks)[1] > 0)
+    {
+        (*picks)[1]--; return "iron";
+    }
+    else if ((*picks)[2] > 0)
+    {
+        (*picks)[2]--; return "stone";
+    }
+    else return "";
+}
+
+int fatigue(std::vector<std::string> minerals, std::vector<std::string> pick_order)         // fatigue function
+{
+    int fatigues = 0;
+    int i = 0;
+    while (i < pick_order.size())
+    {
+        if (pick_order[i] == "diamond") fatigues += 1;
+        else if (pick_order[i] == "iron")
+        {
+            if (minerals[i] == "diamond") fatigues += 5;
+            else if (minerals[i] == "iron") fatigues += 1;
+            else fatigues += 1;
+        }
+        else if (pick_order[i] == "stone")
+        {
+            if (minerals[i] == "diamond") fatigues += 25;
+            else if (minerals[i] == "iron") fatigues += 5;
+            else fatigues += 1;
+        }
+        else
+            break;
+        i++;
+    }
+    return fatigues;
+}
+
+int solution(std::vector<int> picks, std::vector<std::string> minerals) {                           // Solution
+    int answer = 0;
+    std::queue<std::string> mq;                                                                     // Definition of mq
+
+    for (std::string i : minerals)                                                                  // Input in the mq
+    {
+        mq.push(i);
+    }
+
+    int pic_sum = 0;                                                                                // Sum of available picks quantity
+    for (int i : picks)
+        pic_sum += i;
+
+    int Values_size = 0;                                                                            //Definitoin and Finding optimal Values vector size
+    if ((minerals.size() / 5 + (minerals.size() % 5 > 0 ? 1 : 0)) > pic_sum)
+        Values_size = pic_sum;
+    else
+        Values_size = (minerals.size() / 5 + (minerals.size() % 5 > 0 ? 1 : 0));
+
+    std::vector<Value> Values(Values_size);                                                          // Definition of Values vector
+
+    int Values_index = 0;
+    for (int i = 0; i < Values_size; i++)                                                                    // Partition Run
+        Partition(&mq, &Values, Values_index++);
+
+    sort(Values.begin(), Values.end(), cmpValue2);                                                       // Sorting Values vector
+
+    std::vector<std::string> pick_order(minerals.size(), "");                                               //definition of pick_order
+
+    for (int i = 0; i < Values.size(); i++)                                                             // Input in the pick_order
+    {
+        std::string p = select_pic(&picks);
+        for (int j = Values[i].src; j < Values[i].dst + 1; j++)
+        {
+            pick_order[j] = p;
+        }
+    }
+
+    answer = fatigue(minerals, pick_order);                                                               // fatigues run
+    std::cout << std::endl << answer << std::endl;
+
+    return answer;
+}
