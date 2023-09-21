@@ -2,11 +2,11 @@
 #include<string>
 #include <vector>
 
-std::vector<int> cmp_Onum_Xnum(std::vector<std::string> board)
+std::vector<int> cmp_Onum_Xnum(std::vector<std::string> board)          // Counting 'O' num and 'X' num function
 {
 	int numO = 0;
 	int numX = 0;
-	std::vector<int> res_vec={2,NULL};
+	std::vector<int> res_vec={2,NULL};              // Room for numO, numX
 	for (int i = 0; i < 3; i++)
 	{
 		for (int j = 0; j < 3; j++)
@@ -24,60 +24,48 @@ std::vector<int> cmp_Onum_Xnum(std::vector<std::string> board)
 	return res_vec;
 }
 
-bool IS_BINGO(std::vector<std::string> board, char c)
+bool IS_BINGO(std::vector<std::string> board, char c)           // Judging if there's BINGO function
 {
-	int pos_sum_row = 0;
+	int pos_sum_row = 0;                  // There is horizontal BINGO?
 	for (int i = 0; i < 3; i++)
 	{
 		for (int j = 0; j < 3; j++)
 		{
 			if (board[i][j] == c)
-			{
 				pos_sum_row++;
-				std::cout << "1 ";
-			}
 		}
 		if (pos_sum_row == 3)
 			return true;
-		else pos_sum_row = 0;
+		else pos_sum_row = 0;           //ready to begin next row
 	}
 
-	int pos_sum_col = 0;
+	int pos_sum_col = 0;                 // There is vertical BINGO?
 	for (int j = 0; j < 3; j++)
 	{
 		for (int i = 0; i < 3; i++)
 		{
 			if (board[i][j] == c)
-			{
 				pos_sum_col++;
-				std::cout << "2 ";
-			}
 		}
 		if (pos_sum_col == 3)
 			return true;
-		else pos_sum_col = 0;
+		else pos_sum_col = 0;           // ready to begin next column
 	}
 
-	int pos_sum_diag = 0;
+	int pos_sum_diag = 0;              // There is '\' diagonal BINGO?
 	for (int k = 0; k < 3; k++)
 	{
 		if (board[k][k] == c)
-		{
 			pos_sum_diag++;
-			std::cout << "3 ";
-		}
 	}
 	if (pos_sum_diag == 3)
 		return true;
 
-	pos_sum_diag = 0;
+	pos_sum_diag = 0;                   // There is '/' diagonal BINGO?
 	for (int m = 0; m < 3; m++)
 	{
 		if (board[m][2 - m] == c) 
-		{
 			pos_sum_diag++;
-			std::cout << "4 ";
-		}
 	}
 	if (pos_sum_diag == 3)
 		return true;
@@ -91,25 +79,19 @@ int solution(std::vector<std::string> board)
 
 	std::vector<int> OXnum_vec=cmp_Onum_Xnum(board);
 
+    // Impossible_1 because 'X' num exceeds 'O' num
 	if ((OXnum_vec[0] < OXnum_vec[1]) ||  ((OXnum_vec[0] - OXnum_vec[1]) > 1)  )
-	{
-		std::cout << "board의 결과는 '개수'로 인해 실패입니다." << std::endl;
-		return 0;
-	}
+	    return 0;
 
-	bool bO = IS_BINGO(board, 'O');
-	bool bX = IS_BINGO(board, 'X');
-	if (bX && OXnum_vec[1] < OXnum_vec[0])
-	{
-		std::cout << "board의 결과는 '종료 이후 O의 플레이'에 의해 실패입니다." << std::endl;
+	bool bO = IS_BINGO(board, 'O');     //IS_BINGO of 'O' run
+	bool bX = IS_BINGO(board, 'X');     //IS_BINGO of 'X' run
+    
+	if (bX && OXnum_vec[1] < OXnum_vec[0])      // Impossible_2 because 'X' Bingo was done, but 'O' had move again
 		return 0;
-	}
-	else if (bO && OXnum_vec[1] == OXnum_vec[0])
-	{
-		std::cout << "board의 결과는 '종료 이후 X의 플레이'에 의해 실패입니다." << std::endl;
+	
+	else if (bO && OXnum_vec[1] == OXnum_vec[0])    // Impossible_3 because 'O' Bingo was done, but 'X' had move again
 		return 0;
-	}
-
-	std::cout << "board의 결과는 성공입니다." << std::endl;
+	
+	std::cout << "board의 결과는 성공입니다." << std::endl;  // If any Impossible cases were occured, its result is possible
 	return answer; 
 }
