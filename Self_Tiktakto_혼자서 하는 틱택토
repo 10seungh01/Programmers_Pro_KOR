@@ -1,0 +1,115 @@
+#include<iostream>
+#include<string>
+#include <vector>
+
+std::vector<int> cmp_Onum_Xnum(std::vector<std::string> board)
+{
+	int numO = 0;
+	int numX = 0;
+	std::vector<int> res_vec={2,NULL};
+	for (int i = 0; i < 3; i++)
+	{
+		for (int j = 0; j < 3; j++)
+		{
+			if (board[i][j] == 'O')
+				numO++;
+			else if (board[i][j] == 'X')
+				numX++;
+			else
+				continue;
+		}
+	}
+	res_vec[0] = numO;
+	res_vec[1] = numX;
+	return res_vec;
+}
+
+bool IS_BINGO(std::vector<std::string> board, char c)
+{
+	int pos_sum_row = 0;
+	for (int i = 0; i < 3; i++)
+	{
+		for (int j = 0; j < 3; j++)
+		{
+			if (board[i][j] == c)
+			{
+				pos_sum_row++;
+				std::cout << "1 ";
+			}
+		}
+		if (pos_sum_row == 3)
+			return true;
+		else pos_sum_row = 0;
+	}
+
+	int pos_sum_col = 0;
+	for (int j = 0; j < 3; j++)
+	{
+		for (int i = 0; i < 3; i++)
+		{
+			if (board[i][j] == c)
+			{
+				pos_sum_col++;
+				std::cout << "2 ";
+			}
+		}
+		if (pos_sum_col == 3)
+			return true;
+		else pos_sum_col = 0;
+	}
+
+	int pos_sum_diag = 0;
+	for (int k = 0; k < 3; k++)
+	{
+		if (board[k][k] == c)
+		{
+			pos_sum_diag++;
+			std::cout << "3 ";
+		}
+	}
+	if (pos_sum_diag == 3)
+		return true;
+
+	pos_sum_diag = 0;
+	for (int m = 0; m < 3; m++)
+	{
+		if (board[m][2 - m] == c) 
+		{
+			pos_sum_diag++;
+			std::cout << "4 ";
+		}
+	}
+	if (pos_sum_diag == 3)
+		return true;
+
+	return false;
+}
+
+int solution(std::vector<std::string> board) 
+{
+	int answer = 1;
+
+	std::vector<int> OXnum_vec=cmp_Onum_Xnum(board);
+
+	if ((OXnum_vec[0] < OXnum_vec[1]) ||  ((OXnum_vec[0] - OXnum_vec[1]) > 1)  )
+	{
+		std::cout << "board의 결과는 '개수'로 인해 실패입니다." << std::endl;
+		return 0;
+	}
+
+	bool bO = IS_BINGO(board, 'O');
+	bool bX = IS_BINGO(board, 'X');
+	if (bX && OXnum_vec[1] < OXnum_vec[0])
+	{
+		std::cout << "board의 결과는 '종료 이후 O의 플레이'에 의해 실패입니다." << std::endl;
+		return 0;
+	}
+	else if (bO && OXnum_vec[1] == OXnum_vec[0])
+	{
+		std::cout << "board의 결과는 '종료 이후 X의 플레이'에 의해 실패입니다." << std::endl;
+		return 0;
+	}
+
+	std::cout << "board의 결과는 성공입니다." << std::endl;
+	return answer; 
+}
