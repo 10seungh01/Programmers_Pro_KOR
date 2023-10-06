@@ -1,0 +1,96 @@
+#include <iostream>
+#include <vector>
+#include <queue>
+
+std::vector<std::vector<int>> offset = { {1,0},{-1,0},{0,1},{0,-1} };                // Offset list, movement of pos
+typedef struct loc                                                                   // Definition of struct loc
+{
+    int r;              // row
+    int c;              // column
+    int distance;       // distance
+    loc() :r(0), c(0), distance(0) {}                              // Default constructor of loc
+    loc(int a, int b, int c) :r(a), c(b), distance(c) {}           // Copy constructor of loc
+};
+
+int dijkstra_maze(std::vector<std::string> maps, loc str, loc dst)                                        // Dijkstra algorithm for finding shortest path
+{
+    std::vector<std::vector<bool>> visited(maps.size(), std::vector<bool>(maps[0].size(), false));        // visited map
+    std::queue<loc> q;                                                                                   
+    q.push(str);
+    visited[str.r][str.c] = true;
+    while (!q.empty())
+    {
+        loc pos = q.front();
+        q.pop();
+        for (int i = 0; i < 4; i++)
+        {
+            int new_r=pos.r + offset[i][0];              // Probe up, down, right, left from certain positon
+            int new_c=pos.c + offset[i][1];
+
+            if (new_r >= 0 && new_r < maps.size() && new_c >= 0 && new_c < maps[0].size() && maps[new_r][new_c] != 'X'&& visited[new_r][new_c]==false)  
+            {
+                if (new_r == dst.r && new_c == dst.c)                                                // When reached destination
+                {
+                    std::cout << "도착! (" << new_r << "," << new_c << ")"<<std::endl;
+                    return pos.distance + 1;
+                }
+                else                                                                                 // When didn't reach destination
+                {
+                    loc next_pos(new_r, new_c, pos.distance+1);                                      // Preparation to probe next position                   
+                    std::cout << "안착! (" << new_r << "," << new_c << ")"<<std::endl;
+                    visited[new_r][new_c] = true;
+                    q.push(next_pos);
+                }
+            }
+            else continue;
+        }
+    }
+    return -1;                  // When there isn't path to destination
+}
+
+int solution(std::vector<std::string> maps) {
+    int answer = 0;
+    loc start; loc lever; loc end;
+    for (int i = 0; i < maps.size(); i++)                  // Searching position of start, lever, end
+    {
+        for (int j = 0; j < maps[0].size(); j++)
+        {
+            switch (maps[i][j]) 
+            {
+            case 'S':
+                start.r = i; start.c = j;
+                break;
+            case 'L':
+                lever.r = i; lever.c = j;
+                break;
+            case 'E':
+                end.r = i; end.c = j;
+                break;
+            default:
+                break;
+            }
+        }
+    }
+    int ans1 = dijkstra_maze(maps, start, lever);    // distance between start and lever
+    if (ans1 == -1)
+        return -11;
+    else
+        std::cout << ans1 << std::endl;
+    int ans2 = dijkstra_maze(maps, lever, end);     // distance between lever and end
+    if (ans2 == -1)
+        return -12;
+    else
+        std::cout << ans2 << std::endl;
+    answer = ans1 + ans2;
+    return answer;
+}
+
+int main()
+{
+    int ans = 0;
+    std::vector<std::string> m1 = { "SOOOL","XXXXO","OOOOO","OXXXX","OOOOE" };     // test case1
+    std::vector<std::string> m2 = { "LOOXS","OOOOX","OOOOO","OOOOO","EOOOO" };     // test case2
+    std::vector<std::string> m3 = { "SELOO","OOOOX","OOOOO","OOOOO","OOOOO" };     // test case3
+    ans = solution(m3);
+    std::cout << ans;
+}
