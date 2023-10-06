@@ -1,0 +1,291 @@
+#include<iostream>
+#include<string>
+#include<vector>
+#include<queue>
+#include<algorithm>
+#include<set>
+
+#define MAX 10000                 // Max(Unknown) value of distance
+
+class Edge                        // Definition of class Edge
+{
+public:
+    int src;
+    int dst;
+    int weight;
+
+    Edge(int a, int b, int c) { this->src = a; this->dst = b; this->weight = c; }
+};
+
+class Graph                    // Definition of class Graph
+{
+public:
+    Graph(int N, std::vector<std::vector<Edge>> E) :V(N), edge_list(E) {};          // Constructor of class Graph( size, list of edges )
+    int vertices() const { return V; }                                              // vertices() method for returning Graph's size V
+    std::vector<std::vector<Edge>> edges() const { return edge_list; }              // edges() method for returning all edges
+    std::vector<Edge> edges(int v) const                                            // edges(int v) method for returning all edges starting from v vertex
+    {
+        return edge_list[v];
+    }
+    friend std::ostream& operator<< (std::ostream& os, const Graph& G);            // friend standard output
+
+private:
+    int V;                                                       // Size of Graph
+    std::vector<std::vector<Edge>> edge_list;                    // List of all edges existing in this maze map
+};
+
+std::ostream& operator<<(std::ostream& os, Graph& G)             // Standard Output
+{
+    for (int i = 1; i < G.edges().size(); i++)
+    {
+        os << i << "- ";
+        std::vector<Edge> edges = G.edges(i);
+        for (auto e : edges)
+            os << "{" << e.dst << ": " << e.weight << "} ";
+        os << std::endl;
+    }
+    return os;
+}
+
+typedef struct Label                                            // Definition of struct Label
+{
+    int ID;
+    int distance;
+
+    inline bool operator> (const Label& l) const {              // Inline comparator of type Label
+        return this->distance > l.distance;
+    }
+};
+
+typedef struct trio                                            // Definition of struct trio having Start, lever, Exit
+{
+    int first;
+    int second;
+    int third;
+};
+
+int dijkstra_shortest_path(const Graph G, int start, int end)                          // Dijkstra Algorithm for finding shortest path to exit
+{
+    std::priority_queue<Label, std::vector<Label>, std::greater<Label>> heap;
+    std::vector<int> distance(G.vertices(), MAX);
+    std::set<int> visited;
+    std::vector<int> parent(G.vertices());
+
+    heap.emplace(Label{ start,0 });
+    parent[start] = start;
+
+    while (!heap.empty())
+    {
+        Label current_vertex = heap.top();
+        heap.pop();
+
+        if (current_vertex.ID == end)                                                // When arrive at destination
+        {
+            std::cout << current_vertex.ID << "번 목적지에 도착!" << std::endl;
+            break;
+        }
+
+        if (visited.find(current_vertex.ID) == visited.end())                        // When arrive at position that wasn't visited ever
+        {
+            std::cout << current_vertex.ID << "번 정점에 안착" << std::endl;
+
+            for (auto e : G.edges(current_vertex.ID))
+            {
+                int neighbor = e.dst;
+                int new_distance = current_vertex.distance + e.weight;
+
+                if (new_distance < distance[neighbor])                              // Update old longer path to have new shorter path
+                {
+                    heap.emplace(Label{ neighbor,new_distance });
+                    distance[neighbor] = new_distance;
+                    parent[neighbor] = current_vertex.ID;
+                }
+            }
+            visited.insert(current_vertex.ID);                                   
+        }
+    }
+
+    std::vector<int> shortest_path;
+    int current_vertex = end;
+
+    while (current_vertex != start)                                // Tracking route from destination to right in front of the start position
+    {
+        shortest_path.push_back(current_vertex);
+        current_vertex = parent[current_vertex];
+        if (current_vertex == 0)                                  // If fail to track, it means there is no path to exit maze.
+            return -1;
+    }
+    int res = distance[end];                                     
+    std::cout << res << std::endl;
+    for (auto m : shortest_path)
+    {
+        std::cout << m << "-";
+    }
+    
+    std::cout << std::endl;
+
+    return res;
+}
+
+void Edge_Check_Up(std::vector<std::string> maps, std::vector<std::vector<Edge>>* Edges)          // Finding edge upward from one position
+{
+    for (int i = 1; i < maps.size(); i++)
+    {
+        for (int j = 0; j < maps[0].size(); j++)
+        {
+            if (maps[i][j] == 'X')
+            {
+                continue;
+            }
+            else
+            {
+                if (maps[i - 1][j] == 'X')
+                {
+                    continue;
+                }
+                else
+                {
+                    int src = maps[0].size() * i + j + 1;
+                    int dst = maps[0].size() * (i - 1) + j + 1;
+                    (*Edges)[maps[0].size() * i + j + 1].push_back(Edge(src, dst, 1));
+                }
+            }
+        }
+    }
+}
+
+void Edge_Check_Low(std::vector<std::string> maps, std::vector<std::vector<Edge>>* Edges)          // Finding edge downward from one position
+{
+    for (int i = 0; i < maps.size() - 1; i++)
+    {
+        for (int j = 0; j < maps[0].size(); j++)
+        {
+            if (maps[i][j] == 'X')
+            {
+                continue;
+            }
+            else
+            {
+                if (maps[i + 1][j] == 'X')
+                {
+                    continue;
+                }
+                else
+                {
+                    int src = maps[0].size() * i + j + 1;
+                    int dst = maps[0].size() * (i + 1) + j + 1;
+                    (*Edges)[maps[0].size() * i + j + 1].push_back(Edge(src, dst, 1));
+                }
+            }
+        }
+    }
+}
+
+void Edge_Check_Right(std::vector<std::string> maps, std::vector<std::vector<Edge>>* Edges)        // Finding edge right from one position
+{
+    for (int i = 0; i < maps.size(); i++)
+    {
+        for (int j = 0; j < maps[0].size() - 1; j++)
+        {
+            if (maps[i][j] == 'X')
+            {
+                continue;
+            }
+            else
+            {
+                if (maps[i][j + 1] == 'X')
+                {
+                    continue;
+                }
+                else
+                {
+                    int src = maps[0].size() * i + j + 1;
+                    int dst = maps[0].size() * i + (j + 1) + 1;
+                    (*Edges)[maps[0].size() * i + j + 1].push_back(Edge(src, dst, 1));
+                }
+            }
+        }
+    }
+}
+
+void Edge_Check_Left(std::vector<std::string> maps, std::vector<std::vector<Edge>>* Edges)          // Finding edge left from one position
+{
+    for (int i = 0; i < maps.size(); i++)
+    {
+        for (int j = 1; j < maps[0].size(); j++)
+        {
+            if (maps[i][j] == 'X')
+            {
+                continue;
+            }
+            else
+            {
+                if (maps[i][j - 1] == 'X')
+                {
+                    continue;
+                }
+                else
+                {
+                    int src = maps[0].size() * i + j + 1;
+                    int dst = maps[0].size() * i + (j - 1) + 1;
+                    (*Edges)[maps[0].size() * i + j + 1].push_back(Edge(src, dst, 1));
+                }
+            }
+        }
+    }
+}
+
+trio Edge_Check_SE(std::vector<std::string> maps)              // Finding locations of start, lever, destination
+{
+    trio t;
+    for (int i = 0; i < maps.size(); i++)
+    {
+        for (int j = 0; j < maps[0].size(); j++)
+        {
+            if (maps[i][j] == 'S')
+                t.first = maps[0].size() * i + j + 1;
+            else if (maps[i][j] == 'L')
+                t.second = maps[0].size() * i + j + 1;
+            else if (maps[i][j] == 'E')
+                t.third = maps[0].size() * i + j + 1;
+            else
+                continue;
+
+        }
+    }
+    return t;
+}
+
+int solution(std::vector<std::string> maps)                      // Solution
+{
+    int answer = 0;
+    std::vector<std::vector<Edge>> Edges(maps.size() * maps[0].size() + 1);
+
+    Edge_Check_Right(maps, &Edges);
+    Edge_Check_Low(maps, &Edges);
+    Edge_Check_Left(maps, &Edges);
+    Edge_Check_Up(maps, &Edges);
+    Graph G(Edges.size(), Edges);
+    std::cout << G << std::endl;
+    trio t = Edge_Check_SE(maps);
+    int start = t.first;
+    int button = t.second;
+    int end = t.third;
+    int shortest_route1 = dijkstra_shortest_path(G, start, button);
+    if (shortest_route1 < 0)
+        return -1;
+    int shortest_route2 = dijkstra_shortest_path(G, button, end);
+    if (shortest_route2 < 0)
+        return -1;
+
+    answer = shortest_route1 + shortest_route2;
+    return answer;
+}
+
+int main()            // Main
+{
+int ans=0;
+std::vector<std::string> m={"SOOOL","XXXXO","OOOOO","OXXXX","OOOOE"};
+ans=solution(m);
+return ans;
+}
