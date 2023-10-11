@@ -1,0 +1,85 @@
+#include <string>
+#include <vector>
+#include <iostream>
+
+void Brute_Force(std::vector <std::vector<int>> users, std::vector<int> off_rate, std::vector<int> *emos, int* cnt, int* cash, int level, std::vector<int> *rates)
+{
+    if (level == 0)                                                // When arrived to leaf
+    {
+        for (int i = 0; i < 4; i++)  
+        {
+            int tmp_cnt = 0;                                        // cnt in current case
+            std::vector<int> tmp_cashes(users.size(),0);            // cash of each user in current case
+            int total_tmp_cash=0;                                   // sum of cashes of all user's cashes in current case
+            (*rates)[level] = off_rate[i];                          // Updating leaf's off_rate
+            for (auto x : *rates)
+            {
+                std::cout << x << " ";
+            }
+            std::cout<<std::endl;
+            for (int k = 0; k < users.size(); k++)
+            {
+                for (int m = 0; m < emos->size(); m++)
+                {
+                    if (users[k][0] <= (*rates)[m])                  // When specific emoticon's off_rate is above than one user's wishing off_rate
+                    {
+                        tmp_cashes[k] += (*emos)[m] * (100 - (*rates)[m]) / 100;
+                    }
+                }
+                if (tmp_cashes[k] >= users[k][1])                    // When one users's cash is over his budget
+                {
+                    tmp_cnt++;
+                    tmp_cashes[k] = 0;
+                    continue;
+                }
+                std::cout << k + 1 << "번 유저: " << tmp_cashes[k] << " ";
+            }
+            for (auto i : tmp_cashes)                                // Getting total profit of emoticon sells
+            {
+                total_tmp_cash += i;
+            }
+            std::cout << std::endl << "tmp_cnt : " << tmp_cnt << ", *cnt : " << *cnt << std::endl;
+            std::cout << std::endl;
+            if (tmp_cnt > *cnt)                                      // When found bigger amount of membership-join members.
+            {
+                *cnt = tmp_cnt;
+                *cash = total_tmp_cash;
+            }
+            else if (tmp_cnt == *cnt)                                // When found bigger amount of profit of emoticon sells
+            {
+                if (total_tmp_cash > *cash)
+                    *cash = total_tmp_cash;
+            }
+            std::cout << "-----------------next----------------" << std::endl;
+        }
+        std::cout << "------------------------다음-----------------------------------"<<std::endl;
+    }
+    else                                              // When arrived to certain branch
+    {
+        for (int j = 0; j < 4; j++)
+        {
+            (*rates)[level] = off_rate[j];                                      // Updating current branch's off_rate
+            Brute_Force(users, off_rate, emos, cnt, cash, level - 1,rates);     // Run recursive Brute_Force function with one lower branch level
+        }
+    }
+    return;      // When all processes end
+}
+
+std::vector<int> solution(std::vector<std::vector<int>> users, std::vector<int> emoticons) {
+    std::vector<int> answer(2);
+    std::vector<int> off_rate{ 10,20,30,40 };                                                
+    int cnt=0, cash=0;                                                          // final answer
+    int start_level = emoticons.size()-1;                                       // indicator of level of branch in run of Brute_Force function.
+    std::vector<int> rates(emoticons.size(),0);                                 // room for off_rates for each emoticon commodity 
+    Brute_Force(users, off_rate, &emoticons, &cnt, &cash, start_level,&rates);  
+    answer = { cnt,cash };
+    return answer;
+}
+
+int main()
+{
+    std::vector<int> res;
+    std::vector<std::vector<int>> users={ {40, 2900}, {23, 10000}, {11, 5200}, {5, 5900}, {40, 3100}, {27, 9200}, {32, 6900} };
+    std::vector<int> emoticons={1300, 1500, 1600, 4900};
+    res=solution(users,emoticons);
+}
