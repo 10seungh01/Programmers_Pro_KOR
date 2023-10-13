@@ -1,0 +1,68 @@
+#include<iostream>
+#include <vector>
+#include <queue>
+
+void inserting(std::vector<bool>* appeared, std::queue<int> *new_idx, int x, int y, int n)
+{
+    int p_num = x + n;
+    int d_num = x * 2;
+    int t_num = x * 3;
+    if (p_num <= y && (*appeared)[p_num] == false  )
+    {
+        std::cout << p_num << std::endl;
+        new_idx->push(p_num);
+        (*appeared)[p_num] = true;
+    }
+    if (d_num <= y && (* appeared)[d_num] == false )
+    {
+        std::cout << d_num << std::endl;
+        new_idx->push(d_num);
+        (*appeared)[d_num] = true;
+    }
+    if (t_num <= y && (*appeared)[t_num] == false)
+    {
+        std::cout << t_num << std::endl;
+        new_idx->push(t_num);
+        (*appeared)[t_num] = true;
+    }
+    return;
+}
+
+int solution(int x, int y, int n) {
+
+    int cnt = 0;                                           // amount of calculation
+    int idx = 0;                                           
+    std::vector<bool> appeared(y+1, false);                // memorial what number was gotten
+    std::queue<int> index;                                 // list of numbers that will be calculated
+    index.push(x);
+    if (x == y)                                            // exceptional case when x equals y at first
+        return 0;
+    std::queue<int> tmp_queue;                             // temporary room for list of numbers that will be calculated next cnt
+    while(!index.empty())
+    {
+        std::cout << "----------" << cnt << "단계-----------" << std::endl;
+        
+        idx = index.front();
+        appeared[idx] = true;
+        index.pop();
+        inserting(&appeared, &tmp_queue,idx, y, n);
+        if (appeared[y] == true)
+            return cnt+1;
+        if (index.empty() && !tmp_queue.empty())            // When it's time to go to next cnt level
+        {
+            index = tmp_queue;                              // move all contents in tmp_queue to index
+            cnt++;
+            for (int i = 0; i < tmp_queue.size(); i++)      // initialize tmp_queue to use next cnt level
+                tmp_queue.pop();
+        }
+    }
+    return -1;
+}
+int main()
+{
+    int x1 = 10, x2 = 2, x3=10, x4=2;              // test cases 1~4
+    int y1 = 40, y2 = 5, y3=40, y4=2;
+    int n1 = 5, n2 = 4, n3 = 30, n4=1;
+    int ans = solution(x4, y4, n4);
+    std::cout << "최종 답: "<<ans;
+}
