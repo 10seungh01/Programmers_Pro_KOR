@@ -1,0 +1,56 @@
+#include <iostream>
+#include <vector>
+                                                                                    // two pointer algorithm
+std::vector<int> solution(std::vector<int> sequence, int k) {
+	std::vector<int> answer(2, -1);
+	int s = 0;                                                                        // start pointer
+	int e = 0;                                                                        // terminal pointer
+	int sum = 0;                                                                      // sum of partial sequence
+  int min_size = sequence.size();                                                   
+	int min_e=0;
+	int min_s=0;
+	while (!(e==sequence.size() && e==s))
+	{
+		if (k < sum || e == sequence.size())                                            // When we need to subtract
+		{
+			sum -= sequence[s];
+			s++;
+			std::cout << "s:-" << sequence[s-1]<<"("<<s-1<<")";
+		}
+		else                                                                            // When we need to add
+		{
+			sum += sequence[e];
+			e++;
+			std::cout << "e:+" << sequence[e - 1]<< "(" << e-1 << ")";
+		}
+		std::cout << std::endl;
+		if (sum == k)                                                                   // When we found aimed partial sequence
+		{
+			if (min_size > e - 1 - s)                                                     // When we found shorter partial sequence
+			{
+				min_size = e - 1 - s;
+				min_e = e - 1;
+				min_s = s;
+			}
+		}
+	}
+		
+	answer[0] = min_s;
+	answer[1] = min_e;
+	return answer;
+}
+
+int main()
+{
+	std::vector<int> sequence1 = { 1,2,3,4,5 };                                          // test cases 1~4
+	std::vector<int> sequence2 = { 1,1,1,2,3,4,5 };
+	std::vector<int> sequence3 = { 2,2,2,2,2 };
+	std::vector<int> sequence4 = { 1,1,1,1,1,1,1,1,1,1,1,1,1,1 };
+	int k1 = 7;
+	int k2 = 5;
+	int k3 = 6;
+	int k4 = 13;
+	std::vector<int> res(2,-1);
+	res = solution(sequence2, k2);
+	std::cout << res[0] << "," << res[1]<<std::endl;
+}
