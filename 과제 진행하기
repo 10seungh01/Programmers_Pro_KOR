@@ -1,0 +1,163 @@
+#include <iostream>
+#include <vector>
+#include <algorithm>
+#include <string>
+#include <queue>
+#include <list>
+#include <stack>
+
+typedef struct plan
+{
+    std::string sub_name;
+    int s_hh, s_mm;
+    int e_hh, e_mm;
+    int work_hour;
+};
+
+bool cmpplan(plan p1, plan p2)
+{
+    if (p1.s_hh > p2.s_hh)
+        return true;
+    else if (p1.s_hh == p2.s_hh)
+    {
+        if (p1.s_mm > p2.s_mm)
+            return true;
+        else
+            return false;
+    }
+    else
+        return false;
+}
+
+char isoverlap(plan p2, plan p1)
+{
+    if (p1.e_hh > p2.s_hh)
+        return 'o';
+    else if (p1.e_hh == p2.s_hh && p1.e_mm > p2.s_mm)
+        return 'o';
+    else if (p1.e_hh == p2.s_hh && p1.e_mm == p2.s_mm)
+        return 'e';
+    else
+        return 'n';
+}
+
+int sumblank(std::stack<int> blank)
+{
+    int sum = 0;
+    while (!blank.empty())
+    {
+        sum += blank.top();
+        blank.pop();
+    }
+    return sum;
+}
+
+std::vector<std::string> solution(std::vector<std::vector<std::string>> plans) {
+    std::vector<std::string> answer(0);
+
+    std::vector<plan> sorted_plans(plans.size());
+    for (int i = 0; i < plans.size(); i++)
+    {
+        sorted_plans[i].sub_name = plans[i][0];
+        sorted_plans[i].s_hh = std::stoi(plans[i][1].substr(0, 2));
+        sorted_plans[i].s_mm = std::stoi(plans[i][1].substr(3, 2));
+        int tmp = std::stoi(plans[i][2]) % 60;
+        sorted_plans[i].e_hh = sorted_plans[i].s_hh + std::stoi(plans[i][2]) / 60 + (sorted_plans[i].s_mm + tmp) / 60;
+        sorted_plans[i].e_mm = (sorted_plans[i].s_mm + tmp) % 60;
+        sorted_plans[i].work_hour = std::stoi(plans[i][2]);
+    }
+    std::sort(sorted_plans.begin(), sorted_plans.end(), cmpplan);
+    for (auto k : sorted_plans)
+    {
+        std::cout << k.e_hh << ":" << k.e_mm << " ";
+    }
+    std::cout << std::endl;
+    std::queue<plan> que;
+    for (auto i : sorted_plans)
+        que.push(i);
+    std::list<std::string> lt;
+    plan prior_plan = que.front();
+    std::stack<int> blank;
+    lt.push_front(prior_plan.sub_name);
+    que.pop();
+
+    while (!que.empty())
+    {
+        char cases = isoverlap(prior_plan, que.front());
+        switch (cases) {
+        case 'n':
+            std::cout << "빈공간 ";
+            blank.push((prior_plan.s_hh * 60 + prior_plan.s_mm) - (que.front().e_hh * 60 + que.front().e_mm));
+            lt.push_front(que.front().sub_name);
+            prior_plan = que.front();
+            que.pop();
+            break;
+        case 'o':
+            std::cout << "겹침 ";
+            que.front().work_hour = (que.front().e_hh * 60 + que.front().e_mm) - (prior_plan.s_hh * 60 + prior_plan.s_mm);
+            if (que.front().work_hour > sumblank(blank))
+            {
+                lt.push_back(que.front().sub_name);
+                while (!blank.empty())
+                    blank.pop();
+                prior_plan = que.front();
+                que.pop();
+            }
+            else if (que.front().work_hour == sumblank(blank))
+            {
+                lt.insert(--lt.end(), que.front().sub_name);
+                while (!blank.empty())
+                    blank.pop();
+                prior_plan = que.front();
+                que.pop();
+            }
+            else
+            {
+                int pos = 0;
+                int recent_blank = 0;
+                while (que.front().work_hour >= 0)
+                {
+                    que.front().work_hour -= blank.top();
+                    recent_blank = blank.top();
+                    pos++;
+                    blank.pop();
+                }
+                que.front().work_hour += recent_blank;
+                blank.push(recent_blank - que.front().work_hour);
+                std::list<std::string>::iterator iter = lt.begin();
+                for (int a = 0; a < pos; a++)
+                    iter++;
+                lt.insert(iter, que.front().sub_name);
+                prior_plan = que.front();
+                que.pop();
+            }
+            break;
+        case 'e':
+            std::cout << "일치 ";
+            lt.push_front(que.front().sub_name);
+            prior_plan = que.front();
+            que.pop();
+            break;
+        }
+    }
+    for (auto j : lt)
+    {
+        answer.push_back(j);
+    }
+    return answer;
+}
+
+int main()
+{
+    
+    std::vector<std::vector<std::string>> plans1 = { {"korean", "11:40", "30"} ,{"english", "12:10", "20"},{"math", "12:30", "40"} };
+    std::vector<std::vector<std::string>> plans2 = { {"science", "12:40", "50"} ,{"music", "12:20", "40"},{"history", "14:00", "30"},{"computer", "12:30", "100"} };
+    std::vector<std::vector<std::string>> plans3 = { {"aaa", "12:00", "20"} ,{"bbb", "12:10", "30"},{"ccc", "12:40", "10"} };
+    std::vector<std::vector<std::string>> plans4 = { {"aaa", "12:00", "20"} ,{"bbb", "12:20", "30"},{"ccc", "13:00", "10"} };
+    std::vector<std::vector<std::string>> plans5 = { {"aaa", "12:00", "20"},{"bbb", "12:40", "20"},{"ccc", "13:20", "20"},{"ddd", "11:40", "50"} };
+    std::vector<std::string> res = solution(plans5);
+    std::cout << "최종답: ";
+    for (auto i : res)
+        std::cout << i << " ";
+    
+}
