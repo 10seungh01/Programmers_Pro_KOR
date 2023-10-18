@@ -1,152 +1,69 @@
-#include <iostream>
+#include <string>
 #include <vector>
 #include <algorithm>
-#include <string>
-#include <queue>
-#include <list>
+#include <stdlib.h>
 #include <stack>
+using namespace std;
 
-typedef struct plan
-{
-    std::string sub_name;
-    int s_hh, s_mm;
-    int e_hh, e_mm;
-    int work_hour;
-};
+typedef struct _node{
+    string name;
+    int start;
+    int takes;
+}node;
 
-bool cmpplan(plan p1, plan p2)
-{
-    if (p1.s_hh > p2.s_hh)
-        return true;
-    else if (p1.s_hh == p2.s_hh)
-    {
-        if (p1.s_mm > p2.s_mm)
-            return true;
-        else
-            return false;
-    }
-    else
-        return false;
+node arr[1001];
+stack <node> s;
+bool cmp(node a, node b){
+    return a.start < b.start;
 }
 
-char isoverlap(plan p2, plan p1)
-{
-    if (p1.e_hh > p2.s_hh)
-        return 'o';
-    else if (p1.e_hh == p2.s_hh && p1.e_mm > p2.s_mm)
-        return 'o';
-    else if (p1.e_hh == p2.s_hh && p1.e_mm == p2.s_mm)
-        return 'e';
-    else
-        return 'n';
-}
-
-int sumblank(std::stack<int> blank)
-{
-    int sum = 0;
-    while (!blank.empty())
-    {
-        sum += blank.top();
-        blank.pop();
+vector<string> solution(vector<vector<string>> plans) {
+    vector<string> answer;
+    int idx = 0;
+    int N = plans.size();
+    for(int i = 0 ; i < N; i++){
+        arr[i].name = plans[i][0];
+        arr[i].takes = stoi(plans[i][2]) * 1;
+        arr[i].start = (plans[i][1][0]- '0') * 600
+                        + (plans[i][1][1] - '0') * 60
+                        + (plans[i][1][3] - '0') * 10
+                        + (plans[i][1][4] - '0');
     }
-    return sum;
-}
-
-std::vector<std::string> solution(std::vector<std::vector<std::string>> plans) {
-    std::vector<std::string> answer(0);
-
-    std::vector<plan> sorted_plans(plans.size());
-    for (int i = 0; i < plans.size(); i++)
-    {
-        sorted_plans[i].sub_name = plans[i][0];
-        sorted_plans[i].s_hh = std::stoi(plans[i][1].substr(0, 2));
-        sorted_plans[i].s_mm = std::stoi(plans[i][1].substr(3, 2));
-        int tmp = std::stoi(plans[i][2]) % 60;
-        sorted_plans[i].e_hh = sorted_plans[i].s_hh + std::stoi(plans[i][2]) / 60 + (sorted_plans[i].s_mm + tmp) / 60;
-        sorted_plans[i].e_mm = (sorted_plans[i].s_mm + tmp) % 60;
-        sorted_plans[i].work_hour = std::stoi(plans[i][2]);
-    }
-    std::sort(sorted_plans.begin(), sorted_plans.end(), cmpplan);
-    for (auto k : sorted_plans)
-    {
-        std::cout << k.e_hh << ":" << k.e_mm << " ";
-    }
-    std::cout << std::endl;
-    std::queue<plan> que;
-    for (auto i : sorted_plans)
-        que.push(i);
-    std::list<std::string> lt;
-    plan prior_plan = que.front();
-    std::stack<int> blank;
-    lt.push_front(prior_plan.sub_name);
-    que.pop();
-
-    while (!que.empty())
-    {
-        char cases = isoverlap(prior_plan, que.front());
-        switch (cases) {
-        case 'n':
-            std::cout << "빈공간 ";
-            blank.push((prior_plan.s_hh * 60 + prior_plan.s_mm) - (que.front().e_hh * 60 + que.front().e_mm));
-            lt.push_front(que.front().sub_name);
-            prior_plan = que.front();
-            que.pop();
-            break;
-        case 'o':
-            std::cout << "겹침 ";
-            que.front().work_hour = (que.front().e_hh * 60 + que.front().e_mm) - (prior_plan.s_hh * 60 + prior_plan.s_mm);
-            if (que.front().work_hour > sumblank(blank))
-            {
-                lt.push_back(que.front().sub_name);
-                while (!blank.empty())
-                    blank.pop();
-                prior_plan = que.front();
-                que.pop();
-            }
-            else if (que.front().work_hour == sumblank(blank))
-            {
-                lt.insert(--lt.end(), que.front().sub_name);
-                while (!blank.empty())
-                    blank.pop();
-                prior_plan = que.front();
-                que.pop();
-            }
-            else
-            {
-                int pos = 0;
-                int recent_blank = 0;
-                while (que.front().work_hour >= 0)
-                {
-                    que.front().work_hour -= blank.top();
-                    recent_blank = blank.top();
-                    pos++;
-                    blank.pop();
+    sort(arr,arr+N,cmp);
+    node cur;
+    node next = arr[idx++];
+    while(idx < N){
+        cur = next;
+        next = arr[idx++];
+        int diff = next.start - cur.start;
+        if(diff >= cur.takes){
+            diff -= cur.takes;
+            answer.push_back(cur.name);
+            while(diff > 0 && !s.empty()){
+                node snode = s.top(); s.pop();
+                if(diff >= snode.takes){
+                    diff -= snode.takes;
+                    answer.push_back(snode.name);
                 }
-                que.front().work_hour += recent_blank;
-                blank.push(recent_blank - que.front().work_hour);
-                std::list<std::string>::iterator iter = lt.begin();
-                for (int a = 0; a < pos; a++)
-                    iter++;
-                lt.insert(iter, que.front().sub_name);
-                prior_plan = que.front();
-                que.pop();
+                else{
+                    snode.takes -= diff;
+                    diff = 0;
+                    s.push(snode);
+                }
             }
-            break;
-        case 'e':
-            std::cout << "일치 ";
-            lt.push_front(que.front().sub_name);
-            prior_plan = que.front();
-            que.pop();
-            break;
+        }
+        else{
+            cur.takes -= diff;
+            s.push(cur);
         }
     }
-    for (auto j : lt)
-    {
-        answer.push_back(j);
+    answer.push_back(arr[N-1].name);
+    while(!s.empty()){
+        cur = s.top(); s.pop();
+        answer.push_back(cur.name);
     }
     return answer;
 }
-
 int main()
 {
     
