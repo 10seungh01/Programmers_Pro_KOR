@@ -1,0 +1,102 @@
+#include <iostream>
+#include <algorithm>
+#include <string>
+#include <vector>
+#include <stack>
+
+typedef struct task                                // struct task
+{
+    std::string name;                              // plan name
+    int start;                                     // start time position
+    int cost;                                      // time to take 
+};
+
+bool cmptask(task t1, task t2)                    // comparison operator for tasks, cmptask
+{
+    if (t1.start < t2.start)                      // Ascend by start time
+        return true;
+    else
+        return false;
+}
+
+std::vector<std::string> solution(std::vector<std::vector<std::string>> plans)             // solution function
+{            
+    std::vector<std::string> answer;
+
+    std::vector<task> tasks(plans.size());                                                // vector of tasks
+    for (int i = 0; i < plans.size(); i++)
+    {
+        tasks[i].name=plans[i][0];
+        tasks[i].start = (plans[i][1][0]) * 600 +
+            (plans[i][1][1]) * 60 +
+            (plans[i][1][3]) * 10 +
+            (plans[i][1][4]);
+        tasks[i].cost = std::stoi(plans[i][2]);
+    }
+    std::sort(tasks.begin(), tasks.end(), cmptask);                // sort tasks by start time
+    
+    std::stack<task> uncleared;
+    task cur;
+    task next;
+    task tmp;
+    int diff=0;
+    
+    for(int j=0;j<tasks.size()-1;j++)
+    {
+        cur=tasks[j];
+        next=tasks[j+1];
+        diff=(next.start-cur.start-cur.cost);                    // interval between current task and next task
+        if(diff >= 0)                                            // when they're not overlapped
+        {
+            answer.push_back(cur.name);                          // current task can be cleared
+            while(diff>0 && !uncleared.empty())                  // until interval is fully occupied, or there're no uncleared tasks
+            {
+                if(diff>=uncleared.top().cost)                   // when interval is enough to take the most recent uncleared task's cost
+                {
+                    diff-=uncleared.top().cost;
+                    answer.push_back(uncleared.top().name);      // the most recent uncleared task is can be cleared
+                    uncleared.pop();
+                }
+                else                                             // when interval is not enough to take the most recent uncleared task's cost
+                {
+                    tmp=uncleared.top();                         // renew the most recent uncleared task's cost
+                    tmp.cost-=diff;                              
+                    uncleared.pop();
+                    uncleared.push(tmp);
+                    diff=0;                                      // interval is full
+                }
+            }
+            diff=0;
+        }
+        else if(diff<0)                                        // when they're overlapped
+        {
+            tmp=cur;
+            tmp.cost=diff*(-1);
+            diff=0;
+            uncleared.push(tmp);                               // add renewed current task into uncleared tasks stack
+        }
+    }
+    answer.push_back(tasks[tasks.size()-1].name);              // the most latest starting task is always can be cleared in any cases
+    while(!uncleared.empty())                                  // append all tasks of uncleared stack 
+    {
+        answer.push_back(uncleared.top().name);
+        uncleared.pop();
+    }
+    
+    return answer;
+}
+
+int main()
+{
+    
+    std::vector<std::vector<std::string>> plans1 = { {"korean", "11:40", "30"} ,{"english", "12:10", "20"},{"math", "12:30", "40"} };                                        // test case 1~5
+    std::vector<std::vector<std::string>> plans2 = { {"science", "12:40", "50"} ,{"music", "12:20", "40"},{"history", "14:00", "30"},{"computer", "12:30", "100"} };
+    std::vector<std::vector<std::string>> plans3 = { {"aaa", "12:00", "20"} ,{"bbb", "12:10", "30"},{"ccc", "12:40", "10"} };
+    std::vector<std::vector<std::string>> plans4 = { {"aaa", "12:00", "20"} ,{"bbb", "12:20", "30"},{"ccc", "13:00", "10"} };
+    std::vector<std::vector<std::string>> plans5 = { {"aaa", "12:00", "20"},{"bbb", "12:40", "20"},{"ccc", "13:20", "20"},{"ddd", "11:40", "50"} };
+    std::vector<std::string> res = solution(plans5);
+    std::cout << "최종답: ";                                            // final result printing
+    for (auto i : res)
+        std::cout << i << " ";
+    
+}
