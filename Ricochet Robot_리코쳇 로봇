@@ -1,0 +1,73 @@
+#include <string>
+#include <vector>
+#include <queue>
+#include <limits.h>
+
+std::vector<std::pair<int,int>> move = { {0,1}, {0,-1}, {1,0}, {-1,0} };   // {row, column}, righit left up down
+
+int solution(std::vector<std::string> board) {
+    int answer = -1;
+    std::queue<std::pair<int,int>> que;
+    std::vector<std::vector<std::pair<int,bool>>> map(board.size(),                                            // Vector to save each position's distance and whether there was visited
+                                                      std::vector<std::pair<int,bool>>(board[0].size(),
+                                                                                       {INT_MAX,false}));
+    
+    std::pair<int,int> start;                             // Get start 'R' postion's row and column
+    for(int i=0; i<board.size(); i++)                     // i, row value
+        for(int j=0; j<board[0].size(); j++)              // j, column value
+            if(board[i][j]=='R')
+            {
+                start.first=i;   // row
+                start.second=j;  // column
+                break;
+            }
+         
+    // Initialization
+    que.push(start);
+    map[start.first][start.second].first=0;            // start postion's distance is zero
+    int new_r;
+    int new_c;
+    
+    while(!que.empty())  // BFS
+    {
+        if(map[que.front().first][que.front().second].second == false)        // If there wasn't visited before
+        {
+            map[que.front().first][que.front().second].second = true;
+            int tmp = map[que.front().first][que.front().second].first;      // tmp is current position's distance value
+            
+            for(int k=0;k<4;k++)
+            {
+                new_r = que.front().first;
+                new_c = que.front().second;
+                while(new_r+move[k].first < board.size() && new_r+move[k].first >= 0 &&              // Conditions to keep going
+                      new_c+move[k].second < board[0].size() && new_c+move[k].second >= 0 &&
+                      board[new_r+move[k].first][new_c+move[k].second]!='D')
+                {
+                    new_r+=move[k].first;            // Move continuously
+                    new_c+=move[k].second;
+                }
+                if(map[new_r][new_c].first > tmp +1)     // When you found a shorter path to get that new positon
+                {
+                    map[new_r][new_c].first = tmp+1;     // Renew that new positon's distance value
+                    if(board[new_r][new_c]=='G')         // Even it was 'G', answer value is renewed and At the 'G', next movings are not made. 
+                    {
+                        answer=tmp+1;
+                    }
+                    else
+                        que.push({new_r,new_c});         //
+                }
+                
+            }  
+        }
+        que.pop();
+    }
+    return answer;
+}
+
+int main()
+{
+  std::vector<std::string> board1={"...D..R", ".D.G...", "....D.D", "D....D.", "..D...."};       // possible test case; final answer is 7
+  std::vector<std::string> board2={".D.R", "....", ".G..", "...D"};                              // impossible test case; final answer is -1
+
+  int res=solution(board1);
+  std::cout<<res<<std::endl;
