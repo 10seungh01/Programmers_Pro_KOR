@@ -1,0 +1,24 @@
+#include <cmath>
+#include <vector>
+#include <limits.h>
+
+
+int shortest_dist(int m, int n, int a, int b, int c, int d)
+{
+    int total=INT_MAX;
+    if(a!=c || b<=d) total=std::min(total, (int)(pow(a-c, 2)+pow(b+d, 2)));              // When the target is in an area bigger than the y value of the starting point (top side)
+    if(a>=c || b!=d) total=std::min(total, (int)(pow(a-2*m+c, 2)+pow(b-d, 2)));          // When the target is in an area smaller than the x value of the starting point  (left side)
+    if(a!=c || b>=d) total=std::min(total, (int)(pow(a-c, 2)+pow(b-2*n+d, 2)));          // When the target is in an area smaller than the y value of the starting point (bottom side)
+    if(a<=c || b!=d) total=std::min(total, (int)(pow(a+c, 2)+pow(b-d, 2)));              // When the target is in an area bigger than the x value of the starting point (right side)
+    return total;
+}
+
+std::vector<int> solution(int m, int n, int startX, int startY, std::vector<std::vector<int>> balls)
+{
+    std::vector<int> answer;
+
+    for(int i=0; i<balls.size(); i++)
+        answer.push_back(shortest_dist(m, n, startX, startY, balls[i][0], balls[i][1]));      // Parameteres are start balls's X,Y and target ball's X,Y value
+
+    return answer;
+}
