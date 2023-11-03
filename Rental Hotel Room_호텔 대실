@@ -1,0 +1,32 @@
+#include <string>
+#include <vector>
+
+
+int my_stoi(std::string s) //시간을 정수형으로 변환 12:30 => 1230
+{
+    int ans = 0;
+    for(int i=0;i<5;i++)
+        if(std::isdigit(s[i])) ans = ans * 10 + s[i] - '0';
+    return ans;
+}
+
+int solution(std::vector<std::vector<std::string>> book_time)
+{
+    int answer = 0, room[2410]={0}; //0000 ~ 2409 까지인 이유는 마지막 대실 종료 시간(2359) + 청소시간 때문이다. 
+    int n = book_time.size();
+    for(int i=0;i<n;i++)
+    {
+        int s = my_stoi(book_time[i][0]), e = my_stoi(book_time[i][1]) + 10;
+        if(e % 100 >= 60) e += 40; //1257의 10분 후를 1267이 아니라 1307로 만들기 위해서이다.
+        for(int j=s;j<e;j++) room[j]++;
+    }
+    for(int i=0;i<2400;i++) answer = std::max(answer, room[i]); //room 벡터의 가장 큰 값이 필요한 방의 개수와 같다.
+    return answer;
+}
+
+int main()
+{
+  std::vector<std::vector<std::string>> book_time={{"09:10", "10:10"}, {"09:10", "10:10"}, {"10:20", "12:20"}, {"10:20", "12:20"}} // Test Case
+  int final_result = solution(book_time);
+  std::cout << final_result << std::endl;
+}
