@@ -1,0 +1,75 @@
+#include <string>
+#include <vector>
+#include <queue>
+#include <algorithm>
+#include <iostream>
+
+std::vector<std::pair<int, int>> move = { {-1,0}, {1,0}, {0,-1}, {0,1} };      // up, down, left, right
+
+std::pair<int, int> find_init_pos(std::vector<std::string> maps)
+{
+    for (int i = 0; i < maps.size(); i++)
+        for (int j = 0; j < maps[0].size(); j++)
+            if (maps[i][j] != 'X')
+                return { i,j };
+    return { -1,-1 };
+}
+
+std::vector<int> solution(std::vector<std::string> maps) {
+    std::vector<int> answer;
+    std::queue<std::pair<int, int>> que;
+    std::vector<std::vector<bool>> visited(maps.size(), std::vector<bool>(maps[0].size(), false));
+    std::pair<int, int> pos;
+
+    while (true)
+    {
+        int sum = 0;
+        std::pair<int, int> init = find_init_pos(maps);
+
+        if (init.first == -1)                                        // When there is no unvisited island
+        {
+            std::sort(answer.begin(), answer.end());
+            answer.empty() ? answer = { -1 } : answer = answer;      // If there are no islands at first, return answer having only -1.
+            return answer;
+        }
+
+        que.push(init);
+        visited[init.first][init.second] = true;
+
+        while (!que.empty())
+        {
+            pos = que.front();
+            sum += (maps[pos.first][pos.second] - '0');
+            maps[pos.first][pos.second] = 'X';                      // To erase visited island
+            que.pop();
+
+            for (int k = 0; k < 4; k++)
+            {
+                int new_r = pos.first + move[k].first;
+                int new_c = pos.second + move[k].second;
+
+                if (new_r >= 0 && new_r < maps.size() && new_c >= 0 && new_c < maps[0].size() &&
+                    maps[new_r][new_c] != 'X' && visited[new_r][new_c] == false)
+                {
+                    que.push({ new_r,new_c });
+                    /*it can add the same island multiple times which is visited through each of different routes.
+                      so when it find unvisited island, its location must be marked with true right away
+                    */
+                    visited[new_r][new_c] = true; 
+                }
+            }
+        }
+        answer.push_back(sum);
+    }
+}
+int main()
+{
+    std::vector<std::string> maps1 = { "X591X", "X1X5X", "X231X", "1XXX1" };          // test case1. answer is {1, 1, 27}
+    std::vector<std::string> maps2 = { "2XX", "X2X", "X12" };                         // test case2. answer is {2, 5}
+    std::vector<std::string> maps3 = { "XXX", "XXX", "XX" };                          // test case3. answer is {-1}
+    std::vector<int> res = solution(maps1);
+
+    for (auto i : res)
+        std::cout << i << " ";
+    
+}
