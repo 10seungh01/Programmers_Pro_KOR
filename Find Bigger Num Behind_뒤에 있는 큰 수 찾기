@@ -1,0 +1,50 @@
+#include <string>
+#include <vector>
+
+std::vector<int> solution(std::vector<int> numbers) {
+    std::vector<int> answer(numbers);
+    
+    answer[numbers.size()-1] = -1;                            // The answer of last number in numbers is -1, cause there're no any other numbers. 
+    for(int i=numbers.size()-2; i>=0; i--)
+    {
+        for(int j=i+1; j<numbers.size(); j++)
+        {
+            if(numbers[i] < numbers[j])                      // When you find bigger number than numbers[i] after index 'i'
+            {
+                answer[i] = numbers[j];
+                break;
+            }
+            else                                             
+            {
+                /* When the numbers[j] is smaller than numbers[i] and answer[j] is -1, 
+                that means there're no any other number which is bigger than numbers[i] after index 'i' */
+                if(answer[j]==-1) 
+                {
+                    answer[i]=-1;
+                    break;
+                }
+                /* When the numbers[j] is smaller than numbers[i] but answer[j] is bigger than numbers[i], 
+                  that means answer[j] is not only the closest bigger number to numbers[j] but also to numbers[i] */
+                else if(numbers[i] < answer[j])
+                {
+                    answer[i]=answer[j];
+                    break;
+                }
+            }
+        }
+    }
+    
+    return answer;
+}
+
+int main()
+{
+    std::vector<int> numbers1= {2, 3, 3, 5};            // test case1, answer is {3, 5, 5, -1}
+    std::vector<int> numbers2= {9, 1, 5, 3, 6, 2}       // test case2, answer is {-1, 5, 6, 6, -1, -1}
+    std::vector<int> result=solution(numbers1);
+
+    for(int r:result)
+    {
+        std::cout << r << " ";
+    }
+}
