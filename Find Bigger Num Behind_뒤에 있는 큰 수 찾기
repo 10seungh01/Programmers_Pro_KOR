@@ -1,5 +1,6 @@
 #include <string>
 #include <vector>
+#include <iostream>
 
 std::vector<int> solution(std::vector<int> numbers) {
     std::vector<int> answer(numbers);
