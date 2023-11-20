@@ -1,0 +1,52 @@
+#include <string>
+#include <vector>
+#include <algorithm>
+#include <iostream>
+
+int equal_cnt(std::vector<int>::iterator iter, std::vector<int>::iterator end, int num)  // Function for counting certain num when targeted num exists in weights vector
+{
+    int cnt = 0;
+    while (iter != end && *iter == num)
+    {
+        cnt++;
+        iter++;
+    }
+    return cnt;
+}
+
+long long solution(std::vector<int> weights) {
+    long long answer = 0;
+    std::vector<std::pair<int, int>> rates = { {2,1}, {4,3}, {1,1}, {3,2} };    // Distances from center, it consquently means weight ratio of player1 and player2
+
+    std::sort(weights.begin(), weights.end());    // Sort Asc
+
+    for (int i = 0; i < weights.size(); i++)
+    {
+        std::cout << weights[i] << std::endl;
+        for (int j = 0; j < 4; j++)
+        {
+            std::pair<int, int> rate = rates[j];
+            if (weights[i] * rate.first % rate.second == 0)    // Judging if it's possible for partner's weight to exist.
+            {
+                // Finding partner's weight in weights vector except itself and former people to avoid redundant pairing
+                std::vector<int>::iterator pos = std::find(weights.begin() + i + 1, weights.end(), weights[i] * rate.first / rate.second);      
+                if (pos != weights.end())    // When succeed to find
+                {
+                    int e_num = equal_cnt(pos, weights.end(), weights[i] * rate.first / rate.second);      // Counting how many people have same weight
+                    for(int k=0;k<e_num;k++)
+                        std::cout << "    " << weights[i] * rate.first / rate.second << '-' << "발견!" << std::endl;
+                    answer+=e_num;
+                }
+            }
+        }
+    }
+    return answer;
+}
+
+int main()
+{
+    std::vector<int> V1 = { 100, 180, 360, 100, 270 };               // test case 1, correct answer is 4.
+    std::vector<int> V2 = { 100, 100, 100, 150, 150, 200, 300 };     // test case 2, correct answer is 18.
+    int res = solution(V1);
+    std::cout << res;
+}
