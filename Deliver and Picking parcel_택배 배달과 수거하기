@@ -1,0 +1,63 @@
+#include <string>
+#include <vector>
+#include <iostream>
+
+long long solution(int cap, int n, std::vector<int> deliveries, std::vector<int> pickups) {
+    long long answer = 0;
+    int last_del=n-1, last_pick=n-1;   // Definition of index of the furthest point
+    int capacity=cap;
+
+    for(;last_del>=0;last_del--)       // Getting index of the farthest delivery point
+        if(deliveries[last_del]>0)
+            break;
+    for(;last_pick>=0;last_pick--)    // Getting index of the farthest pickup point
+        if(pickups[last_pick]>0)
+            break;
+
+    while(!(last_del<=0 && deliveries[0]<=0 && last_pick<=0 && pickups[0]<=0))      // Until there are no things to be delivered or picked up
+    {
+        if(last_del<last_pick)                // Length of movement route is equal to farther point's distance among last_del and last_pick
+            answer+=2*(last_pick+1);
+        else                                  
+            answer+=2*(last_del+1);
+
+        // Renewing last_del
+        while(last_del>0 && (capacity-deliveries[last_del])>=0)  // When last_del point can be completed with current remaining capacity, and there are closer delivery points
+        {
+            capacity-=deliveries[last_del];
+            deliveries[last_del]=0;
+            last_del--;
+        }
+        deliveries[last_del]-=capacity;
+        std::cout<<"last_del: "<<last_del<<std::endl;
+        capacity=cap;
+
+        // Renewing last_pick
+        while(last_pick>0 && (capacity-pickups[last_pick])>=0)  // When last_pick point can be completed with current remaining capacity, and there are closer pickup points
+        {
+            capacity-=pickups[last_pick];
+            pickups[last_pick]=0;
+            last_pick--;
+        }
+        pickups[last_pick]-=capacity;
+        std::cout<<"last_pick: "<<last_pick<<std::endl;
+        capacity=cap;
+
+    }
+
+    return answer;
+}
+
+int main()
+{
+  std::vector<int> deliveries1={1, 0, 3, 1, 2};              // test case1, right answer is 16
+  std::vector<int> pickups1={0, 3, 0, 4, 0};
+  int cap1=4, n1=5;
+  
+  std::vector<int> deliveries2={1, 0, 2, 0, 1, 0, 2};        // test case2, right answer is 30
+  std::vector<int> pickups2={0, 2, 0, 1, 0, 2, 0};
+  int cap2=2, n2=7;
+
+  int res=solution(cap2, n2, deliveries2, pickups2);
+  std::cout << res;
+}
