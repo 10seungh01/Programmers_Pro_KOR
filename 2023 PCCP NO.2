@@ -1,0 +1,85 @@
+#include <string>
+#include <vector>
+#include <queue>
+#include <algorithm>
+#include <iostream>
+
+int solution(std::vector<std::vector<int>> land) {
+    std::vector<std::pair<int, int>> moves = { {0,1}, {0,-1}, {-1,0}, {1,0} };      // right, left, down, up
+    std::queue<std::pair<int, int>> que;
+    std::vector<int> lumps;                                                         // oil lumps
+    
+    int answer = 0;
+    int row, col;
+    int max = 0;
+    int index = 0;
+
+    for (int pos = 0; pos < land[0].size(); pos++)
+    {
+        int amount = 0;
+        for (int depth = 0; depth < land.size(); depth++)
+        {
+            if (land[depth][pos] == 1)                                // When this spot has oil, and not been visited before. 
+            {
+                index--;                                              // index means oil lump's id
+                que.push({ depth, pos });
+                land[depth][pos] = index;
+                amount++;
+
+                while (!que.empty())
+                {
+                    row = que.front().first;
+                    col = que.front().second;
+                    que.pop();
+                    for (int i = 0; i < 4; i++)
+                    {
+                        int new_r = row + moves[i].first;
+                        int new_c = col + moves[i].second;
+                        if (new_r >= 0 && new_r < land.size() && new_c >= 0 && new_c < land[0].size() && land[new_r][new_c] == 1)
+                        {
+                            que.push({ new_r,new_c });
+                            land[new_r][new_c] = index;
+                            amount++;
+                        }
+                    }
+                }
+            }
+            if (amount > 0)                             // When you found oils.
+            {
+                lumps.push_back(amount);                // Resister oil lump's id
+                amount = 0;                             // Initializing amount
+            }
+        }
+    }
+
+    for (int i = 0; i < land[0].size(); i++)            // Process to find max value
+    {
+        std::vector<int> one_col;
+        int former = 0;
+        int tmp = 0;
+        for (int j = 0; j < land.size(); j++)
+            if (land[j][i] < 0)                         // When this spot was registered for oil lump
+                one_col.push_back(land[j][i]);
+        std::sort(one_col.begin(), one_col.end());
+        for (int k = 0; k < one_col.size(); k++)
+        {
+            if (former != one_col[k])                   // Avoiding overlapped oil lump
+            {
+                tmp += lumps[(one_col[k] * -1) - 1];
+                former = one_col[k];
+            }
+        }
+        max < tmp ? max = tmp : max;                    // Renew max value
+    }
+    return answer=max;
+}
+
+int main()
+{
+    std::vector<std::vector<int>> land1 = { {0, 0, 0, 1, 1, 1, 0, 0 }, { 0, 0, 0, 0, 1, 1, 0, 0 }, { 1, 1, 0, 0, 0, 1, 1, 0 }, { 1, 1, 1, 0, 0, 0, 0, 0 }, { 1, 1, 1, 0, 0, 0, 1, 1 } }; // test case1, ans:9
+    std::vector<std::vector<int>> land2 = { {1, 0, 1, 0, 1, 1}, {1, 0, 1, 0, 0, 0}, {1, 0, 1, 0, 0, 1}, {1, 0, 0, 1, 0, 0}, {1, 0, 0, 1, 0, 1}, {1, 0, 0, 0, 0, 0}, {1, 1, 1, 1, 1, 1} }; // test case2, ans:16
+    std::vector<std::vector<int>> land3 = { {1, 1, 1, 1, 1}, {1, 0, 0, 0, 1}, {1, 0, 1, 0, 1}, {1, 0, 0, 0, 1}, {1, 1, 1, 1, 1} }; // test case3, ans:17
+
+    int res = solution(land1);
+    std::cout << "final: " << res << std::endl;
+}
