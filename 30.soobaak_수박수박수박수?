@@ -1,0 +1,15 @@
+#include <string>
+#include <vector>
+std::string solution(int n) {
+    std::string answer="";
+    int i=0;
+    while(i<n)
+    {
+        if(i%2==0)
+            answer.append("수");
+        else
+            answer.append("박");
+        i++;
+    }
+    return answer;
+}
