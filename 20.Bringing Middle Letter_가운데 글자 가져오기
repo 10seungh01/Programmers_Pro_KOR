@@ -1,0 +1,6 @@
+#include <string>
+#include <vector>
+
+std::string solution(std::string s) {
+    return s.length()%2!=0 ? s.substr(s.length()/2,1) : s.substr(s.length()/2-1,2);
+}
