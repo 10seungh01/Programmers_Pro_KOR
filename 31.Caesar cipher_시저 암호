@@ -1,0 +1,17 @@
+#include <string>
+#include <vector>
+#include <cctype>
+
+std::string solution(std::string s, int n) {
+    std::string answer = "";
+    for(int i=0; i<s.length(); i++)
+    {
+        if(s[i]==32)
+            s[i]=32;
+        else if(isupper(s[i])!=0)       // 대문자
+            s[i]=(s[i]-65+n)%26+65;
+        else                            // 소문자
+            s[i]=(s[i]-97+n)%26+97;
+    }
+    return answer=s;
+}
