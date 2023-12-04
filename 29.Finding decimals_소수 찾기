@@ -1,0 +1,25 @@
+#include <string>
+#include <vector>
+
+int solution(int n) {
+    int answer = 0;
+    int pos = 2;
+    std::vector<bool> v(n+1,true);
+    
+    while(pos < v.size())
+    {
+        for(int j=2*pos; j<=n; j+=pos)
+        {
+            if(v[j]==true)
+                v[j]=false;
+        }
+        do{pos++;}
+        while(v[pos]==false);
+    }
+    
+    for(int i=1; i<v.size(); i++)
+        if(v[i]==true)
+            answer++;
+    
+    return answer-1;
+}
