@@ -1,0 +1,16 @@
+#include <string>
+#include <vector>
+
+bool solution(std::string s) {
+    bool answer = true;
+    int cnt=0;
+    for(int i=0; i<s.length(); i++)
+        if(s[i]<=57)
+            cnt++;
+        else return false;
+    
+    if(cnt==4 || cnt==6)
+        return true;
+    else
+        return false;
+}
