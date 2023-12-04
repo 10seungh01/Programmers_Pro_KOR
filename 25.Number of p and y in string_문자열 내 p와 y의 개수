@@ -1,0 +1,16 @@
+#include <string>
+#include <iostream>
+
+bool solution(std::string s)
+{
+    bool answer = true;
+    int c=0;
+    
+    for(int i=0; i<s.length(); i++)
+        if(s[i]=='p' || s[i]=='P')
+            c++;
+        else if(s[i]=='y' || s[i]=='Y')
+            c--;
+    
+    return c==0 ? answer=true : answer=false;
+}
