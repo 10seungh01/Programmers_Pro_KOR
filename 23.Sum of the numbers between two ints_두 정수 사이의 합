@@ -1,0 +1,16 @@
+#include <string>
+#include <vector>
+
+long long solution(int a, int b) {
+    long long answer = 0;
+    if(a>b)
+    {
+        answer=b;
+        b=a;
+        a=answer;
+        answer=0;
+    }
+    for(int i=a;i<=b;i++)
+        answer+=i;
+    return answer;
+}
