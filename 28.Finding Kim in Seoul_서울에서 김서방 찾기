@@ -1,0 +1,15 @@
+#include <string>
+#include <vector>
+#include <sstream>
+
+std::string solution(std::vector<std::string> seoul) {
+    std::ostringstream oss;
+    int i=0;
+    for(; i<seoul.size(); i++)
+        if(seoul[i]=="Kim")
+            break;
+    
+    oss<<"김서방은 "<<i<<"에 있다";
+            
+    return oss.str();
+}
