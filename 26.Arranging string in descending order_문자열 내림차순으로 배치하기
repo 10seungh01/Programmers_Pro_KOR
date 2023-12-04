@@ -1,0 +1,8 @@
+#include <string>
+#include <vector>
+#include <algorithm>
+
+std::string solution(std::string s) {
+    std::sort(s.begin(), s.end(), [&](char c1, char c2){return c1>c2 ? true : false;});
+    return s;
+}
