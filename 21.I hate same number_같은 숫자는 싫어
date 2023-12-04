@@ -1,0 +1,16 @@
+#include <vector>
+#include <iostream>
+
+std::vector<int> solution(std::vector<int> arr) 
+{
+    std::vector<int> answer;
+    int former=-1;
+    for(int i=0; i<arr.size(); i++)
+    {
+        if(former!=arr[i])
+            answer.push_back(arr[i]);
+        former=arr[i];    
+    }
+
+    return answer;
+}
