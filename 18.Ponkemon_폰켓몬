@@ -1,0 +1,16 @@
+#include <vector>
+#include <algorithm>
+
+int solution(std::vector<int> nums)
+{
+    int answer = 0;
+    int half=nums.size()/2;
+    
+    std::sort(nums.begin(), nums.end());
+    nums.erase(std::unique(nums.begin(),nums.end()),nums.end());
+    
+    if(nums.size() >= half)
+        return half;
+    else
+        return nums.size();
+}
