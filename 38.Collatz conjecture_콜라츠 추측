@@ -1,0 +1,13 @@
+#include <string>
+#include <vector>
+
+int solution(int num) {
+    int answer = 0;
+    long lnum=num;
+    while(answer<500 && lnum!=1)
+    {
+        lnum%2==0 ? lnum=lnum/2 : lnum=lnum*3+1;
+        answer++;
+    }
+    return lnum==1 ? answer : -1;
+}
