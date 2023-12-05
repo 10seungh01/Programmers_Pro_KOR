@@ -1,0 +1,37 @@
+#include <vector>
+#include <iostream>
+
+bool is_prime(int t)
+{
+    std::vector<bool> prime(t+1,true);
+    for(int i=2; i<=t/2; i++)
+    {
+        if(prime[t]==false)
+            return false;
+        if(prime[i])
+        {
+            int j=i*2;
+            while(j<=t)
+            {
+                prime[j]=false;
+                j+=i;
+            }
+        }
+    }
+    return prime[t]==true;
+}
+
+int solution(std::vector<int> nums) {
+    int answer = 0;
+    int sum = 0;
+    for(int i=0; i<nums.size(); i++)
+        for(int j=i+1; j<nums.size(); j++)
+            for(int k=j+1; k<nums.size(); k++)
+            {
+                sum=0;
+                sum=nums[i]+nums[j]+nums[k];
+                is_prime(sum) ? answer++ : answer;
+            }
+    
+    return answer;
+}
