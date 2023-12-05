@@ -1,0 +1,10 @@
+#include <string>
+#include <vector>
+
+bool solution(int x) {
+    int sum=0;
+    std::string s=std::to_string(x);
+    for(char c: s)
+        sum+=(c-48);
+    return x%sum==0 ? true : false;
+}
