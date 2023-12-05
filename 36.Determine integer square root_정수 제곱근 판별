@@ -1,0 +1,15 @@
+#include <string>
+#include <vector>
+#include <cmath>
+
+long long solution(long long n) {
+    int r=1;
+    while(std::pow(r,2)<=n)
+    {
+        if(std::pow(r,2)==n)
+            return pow(r+1,2);
+        else
+            r++;
+    }
+    return -1;
+}
