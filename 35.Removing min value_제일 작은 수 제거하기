@@ -1,0 +1,12 @@
+#include <string>
+#include <vector>
+#include <algorithm>
+
+std::vector<int> solution(std::vector<int> arr) {
+    
+    if(arr.size()==1)
+        return {-1};
+    
+    arr.erase(std::min_element(arr.begin(), arr.end()));
+    return arr;
+}
