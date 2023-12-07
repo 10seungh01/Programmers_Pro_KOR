@@ -1,0 +1,18 @@
+#include <string>
+#include <vector>
+#include <algorithm>
+
+int solution(std::vector<int> d, int budget) {
+    int answer = 0;
+    std::sort(d.begin(),d.end());
+    int i=0;
+    while(budget > 0 && i<d.size())
+    {
+        budget-=d[i];
+        i++;
+    }
+    if(budget<0)
+        return i-1;
+    else
+        return i;
+}
