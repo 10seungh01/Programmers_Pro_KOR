@@ -1,0 +1,68 @@
+#include <string>
+#include <vector>
+#include <cmath>
+
+int solution(std::string dartResult) {
+    int answer = 0;
+    int i_p=0, i_e=0, i_o=0;
+    std::vector<int> point(dartResult.size()/2,0);            // Room for point of each shot
+    std::vector<int> exp(dartResult.size()/2,1);              // Room for exponent of each shot
+    std::vector<int> option(dartResult.size()/2,1);           // Room for option of each shot
+
+    for(int i=0; i<dartResult.size();)
+    {
+        if(dartResult[i]>=48 && dartResult[i]<=57)              // When it means point
+        {
+            int j=i, cnt=0;
+            while(dartResult[j]>=48 && dartResult[j]<=57)
+            {
+                cnt++;
+                j++;
+            }
+            std::string s=dartResult.substr(i,cnt);
+            point[i_p]=(std::stoi(s));
+            i_p++;
+            i=j;
+        }
+        else if(dartResult[i]>=65)                      // When it means exponent
+        {
+            switch(dartResult[i])
+            {
+                case 'S':
+                    exp[i_e]=1;
+                    i_e++;
+                    break;
+                case 'D':
+                    exp[i_e]=2;
+                    i_e++;
+                    break;
+                default:
+                    exp[i_e]=3;
+                    i_e++;
+                    break;
+            }
+            if(i+1<dartResult.size() && dartResult[i+1]>42)    // When there is no option next to the exponent
+                i_o++;
+            i++;
+        }
+        else                                  // When it means option
+        {
+            if(dartResult[i]==42)
+            {
+                option[i_o]=2;
+                if(i_o>=1)
+                    option[i_o-1]*=2;
+            }
+            else
+                option[i_o]=-1;
+            i_o++;
+            i++;
+            continue;
+        }
+    }
+
+    for(int k=0; k<dartResult.size()/2; k++)
+        answer+=std::pow(point[k],exp[k])*option[k];
+
+    return answer;
+}
