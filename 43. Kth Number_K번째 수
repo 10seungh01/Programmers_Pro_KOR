@@ -1,0 +1,16 @@
+#include <string>
+#include <vector>
+#include <algorithm>
+
+std::vector<int> solution(std::vector<int> array, std::vector<std::vector<int>> commands) {
+    std::vector<int> answer;
+    for(int i=0; i<commands.size(); i++)
+    {
+        std::vector<int>  c = commands[i];
+        std::vector<int> c_v(c[1]-c[0]+1);
+        std::copy(array.begin()+c[0]-1,array.begin()+c[1],c_v.begin());
+        std::sort(c_v.begin(), c_v.end());
+        answer.push_back(c_v[c[2]-1]);
+    }
+    return answer;
+}
