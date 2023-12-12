@@ -1,0 +1,46 @@
+#include <string>
+#include <vector>
+#include <cctype>
+#include <sstream>
+
+int find_num(std::string str, std::vector<std::string> v)
+{
+    for(int i=0; i<v.size(); i++)
+    {
+        if(v[i]==str)
+            return i;
+    }
+    return -1;
+}
+
+int solution(std::string s) {
+    std::stringstream ss, buffer;
+    std::vector<std::string> v={"zero","one","two","three","four","five","six","seven","eight","nine"};
+
+    int answer = 0;
+    int i=0;
+
+    while(i<s.size())
+    {
+        if(std::isdigit(s[i])==true)
+        {
+            ss<<s[i];
+            i++;
+        }
+        else
+        {
+            buffer<<s[i];
+            int r=find_num(buffer.str(), v);
+            if(r>=0)
+            {
+                char c=r+48;
+                ss<<c;
+                buffer.str("");
+            }
+            i++;
+        }
+    }
+    std::string ans=ss.str();
+    answer=std::stoi(ans);
+    return answer;
+}
