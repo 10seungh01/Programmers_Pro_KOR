@@ -1,0 +1,32 @@
+#include <string>
+#include <vector>
+#include <cmath>
+
+int solution(int n) {
+    std::vector<int> tri;
+    int answer = 0;
+    int i=1, j=0;
+    
+    while(n/i>0)
+        i*=3;
+    
+    i/=3;
+    while(i>0)
+    {
+        if(n/i > 0)
+        {
+            j=n/i;
+            tri.push_back(j);
+            n-=i*j;
+        }
+        else
+            tri.push_back(0);
+        
+        i/=3;
+    }
+    
+    for(int k=0; k<tri.size(); k++)
+        answer=answer+std::pow(3,k)*tri[k];
+    
+    return answer;
+}
