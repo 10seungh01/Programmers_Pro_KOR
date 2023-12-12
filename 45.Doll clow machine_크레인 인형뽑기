@@ -1,0 +1,42 @@
+#include <string>
+#include <vector>
+#include <stack>
+
+int solution(std::vector<std::vector<int>> board, std::vector<int> moves) {
+    int answer = 0;
+    int pos=0, picked=0, last=0;
+
+    std::vector<std::stack<int>> doll(board[0].size());
+    std::stack<int> bucket;
+
+    for(int c=0; c<board[0].size(); c++)
+        for(int r=board.size()-1; r>=0; r--)
+            if(board[r][c]!=0) 
+                doll[c].push(board[r][c]);
+
+    for(int i=0; i<moves.size(); i++)
+    {
+        pos=moves[i];
+        if(doll[pos-1].size()>0)
+        {
+            picked=doll[pos-1].top();
+            doll[pos-1].pop();
+
+            if(bucket.size()>0 && picked==last)
+            {
+                answer+=2;
+                bucket.pop();
+                bucket.size()!=0 ? last=bucket.top() : last=0;
+            }
+            else
+            {
+                bucket.push(picked);
+                last=picked;
+            }
+        }
+        else
+            picked=-1;
+    }
+
+    return answer;
+}
