@@ -1,0 +1,26 @@
+#include <string>
+#include <vector>
+
+int solution(std::vector<std::vector<int>> sizes) {
+    int answer = 0;
+    int tmp1=0, tmp2=0;
+    
+    for(int i=0; i<sizes.size(); i++)
+    {
+        if(sizes[i][0] < sizes[i][1])
+        {
+            tmp1=sizes[i][0];
+            sizes[i][0]=sizes[i][1];
+            sizes[i][1]=tmp1;
+        }
+    }
+    tmp1=0;
+    
+    for(int j=0; j<sizes.size(); j++)
+    {
+        tmp1 < sizes[j][0] ? tmp1=sizes[j][0] : tmp1;
+        tmp2 < sizes[j][1] ? tmp2=sizes[j][1] : tmp2;
+    }
+    
+    return answer=tmp1*tmp2;
+}
