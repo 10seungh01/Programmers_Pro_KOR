@@ -1,0 +1,57 @@
+#include <string>
+#include <vector>
+#include <map>
+#include <algorithm>
+#include <sstream>
+
+using namespace std;
+
+vector<int> solution(vector<string> id_list, vector<string> report, int k) {
+    vector<int> answer(id_list.size());
+    
+    map<string,int> user_num;
+    for(int i=0; i<id_list.size(); i++)
+        user_num.insert({id_list[i],i});
+    
+    sort(report.begin(),report.end());
+    report.erase(unique(report.begin(),report.end()),report.end());
+    
+    vector<vector<int>> claim(id_list.size());
+    vector<int> passive_list;
+    
+    stringstream ss;
+    string active, passive;
+    for(int j=0; j<report.size(); j++)
+    {
+        ss.str(report[j]);
+        ss>>active; ss>>passive;
+        int act_num=user_num[active];
+        int pas_num=user_num[passive];
+        claim[act_num].push_back(pas_num);
+        passive_list.push_back(pas_num);
+        ss.clear();
+    }
+    
+    std::vector<int> c_passive_list=passive_list;
+    sort(c_passive_list.begin(),c_passive_list.end());
+    c_passive_list.erase(unique(c_passive_list.begin(),c_passive_list.end()),c_passive_list.end());
+    
+    for(int m=0; m<c_passive_list.size(); m++)
+    {
+        int search=c_passive_list[m];
+        if(count(passive_list.begin(),passive_list.end(),search)<k)
+        {
+            for(int n=0; n<claim.size(); n++)
+            {
+                vector<int>::iterator iter=find(claim[n].begin(), claim[n].end(),search);
+                if(iter!=claim[n].end())
+                    claim[n].erase(iter);
+            }
+        }
+    }
+    
+    for(int a=0; a<id_list.size(); a++)
+        answer[a]=claim[a].size();
+        
+    return answer;
+}
