@@ -1,0 +1,60 @@
+#include <string>
+#include <vector>
+
+int solution(std::vector<std::string> babbling) {
+    int answer=0;
+    std::vector<std::string> candidate;
+    std::vector<std::string> repeat={"ayaaya","yeye","woowoo","mama"};
+    
+    for(int i=0; i<babbling.size(); i++)
+    {
+        if(babbling[i][0]!='a' && babbling[i][0]!='y' && babbling[i][0]!='w' && babbling[i][0]!='m')
+            continue;
+        
+        bool is_repeated=false;
+        for(int j=0; j<4; j++)
+            if(babbling[i].find(repeat[j])!=std::string::npos)
+                is_repeated=true;
+        
+        if(!is_repeated)
+            candidate.push_back(babbling[i]);
+    }
+    
+    for(int j=0; j<candidate.size(); j++)
+    {
+        while(candidate[j].length()>0)
+        {
+            char init=candidate[j][0];
+            
+            if(init=='a')
+            {
+                if(candidate[j].substr(0,3)=="aya")
+                    candidate[j].erase(0,3);
+                else break;
+            }
+            else if(init=='y')
+            {
+                if(candidate[j].substr(0,2)=="ye")
+                    candidate[j].erase(0,2);
+                else break;
+            }
+            else if(init=='w')
+            {
+                if(candidate[j].substr(0,3)=="woo")
+                    candidate[j].erase(0,3);
+                else break;
+            }
+            else if(init=='m')
+            {
+                if(candidate[j].substr(0,2)=="ma")
+                    candidate[j].erase(0,2);
+                else break;
+            }
+            else
+                break;
+        }
+        
+        candidate[j].length()==0 ? answer++ : answer;
+    }
+    return answer;
+}
