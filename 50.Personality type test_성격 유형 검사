@@ -1,0 +1,28 @@
+#include <string>
+#include <vector>
+#include <map>
+
+std::string solution(std::vector<std::string> survey, std::vector<int> choices) {
+    std::string answer = "";
+    
+    std::map<char,int> typeScore;
+    typeScore.insert({'R',0}); typeScore.insert({'T',0});
+    typeScore.insert({'C',0}); typeScore.insert({'F',0});
+    typeScore.insert({'J',0}); typeScore.insert({'M',0});
+    typeScore.insert({'A',0}); typeScore.insert({'N',0});
+    
+    for(int i=0; i<survey.size(); i++)
+    {
+        if(choices[i]<4)
+            typeScore[survey[i][0]]+= 4-choices[i];
+        else if(choices[i]>4)
+            typeScore[survey[i][1]]+= choices[i]-4;
+    }
+    
+    typeScore['R'] >= typeScore['T'] ? answer.push_back('R') : answer.push_back('T');
+    typeScore['C'] >= typeScore['F'] ? answer.push_back('C') : answer.push_back('F');
+    typeScore['J'] >= typeScore['M'] ? answer.push_back('J') : answer.push_back('M');
+    typeScore['A'] >= typeScore['N'] ? answer.push_back('A') : answer.push_back('N');
+    
+    return answer;
+}
