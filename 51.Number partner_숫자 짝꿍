@@ -1,0 +1,41 @@
+#include <string>
+#include <vector>
+#include <algorithm>
+
+std::string solution(std::string X, std::string Y) {
+    std::string answer = "";
+    std::vector<int> countx(10,0), county(10,0);
+    std::string::iterator iter1=X.begin(), iter2=Y.begin();
+    
+    while(true)
+    {
+        if(iter1!=X.end())
+        {
+            countx[*iter1-48]++;
+            iter1++;
+        }
+        if(iter2!=Y.end())
+        {
+            county[*iter2-48]++;
+            iter2++;
+        }
+        
+        if(iter1==X.end() && iter2==Y.end()) break;
+    }
+    
+    for(int i=0; i<=9; i++)
+    {
+        int common=std::min(countx[i],county[i]);
+        for(int j=0; j<common; j++)
+            answer.push_back(i+48);
+    }
+    
+    if(answer=="")
+        return "-1";
+    
+    std::sort(answer.begin(),answer.end(), std::greater());
+    if(answer[0]=='0')
+        return "0";
+    
+    return answer;
+}
