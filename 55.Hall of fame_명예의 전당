@@ -1,0 +1,22 @@
+#include <string>
+#include <vector>
+#include <algorithm>
+
+std::vector<int> solution(int k, std::vector<int> score) {
+    std::vector<int> answer;
+
+    for(int i=score.size(); i>0; i--)
+    {
+        std::vector<int> tmp=score;
+        tmp.erase(tmp.begin()+i,tmp.end());
+        std::sort(tmp.begin(), tmp.end(), std::greater());
+
+        if(tmp.size()>=k)
+            answer.push_back(tmp[k-1]);
+        else
+            answer.push_back(tmp.back());
+    }
+
+    std::reverse(answer.begin(), answer.end());
+    return answer;
+}
