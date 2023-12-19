@@ -1,0 +1,45 @@
+#include <string>
+#include <vector>
+#include <sstream>
+#include <map>
+
+std::vector<int> solution(std::string today, std::vector<std::string> terms, std::vector<std::string> privacies) 
+{
+    std::vector<int> answer, present, past;
+    std::vector<char> term;
+    std::map<char,int> term_map;
+    std::stringstream t, now(today), ago;
+    std::string str;
+    
+    for(std::string s:terms)
+    {
+        t.str(s);
+        char c; std::string value;
+        t>>c; t>>value;
+        term_map[c]=std::stoi(value);
+        t.clear();
+    }
+    
+    while(std::getline(now,str,'.'))
+        present.push_back(std::stoi(str));
+    
+    for(int i=0; i<privacies.size(); i++)
+    {
+        ago.str(privacies[i].substr(0,10));
+        while(std::getline(ago,str,'.'))
+            past.push_back(std::stoi(str));
+        
+        term.push_back(privacies[i].back());
+        
+        ago.clear();
+    }
+    
+    for(int j=0; j<privacies.size(); j++)
+    {
+        int diff=(present[0]-past[3*j])*12*28+(present[1]-past[3*j+1])*28+(present[2]-past[3*j+2]);
+        if(term_map[term[j]]*28 <= diff)
+            answer.push_back(j+1);
+    }
+    
+    return answer;
+}
