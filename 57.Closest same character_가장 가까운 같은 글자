@@ -9,15 +9,10 @@ std::vector<int> solution(std::string s) {
     for(int i=0; i<s.length(); i++)
     {
         if(map.find(s[i])!=map.end())
-        {
             answer.push_back(i-map[s[i]]);
-            map[s[i]]=i;
-        }
         else
-        {
             answer.push_back(-1);
-            map.insert({s[i],i});
-        }
+        map[s[i]]=i;
     }
     return answer;
 }
