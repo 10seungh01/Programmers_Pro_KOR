@@ -1,0 +1,23 @@
+#include <string>
+#include <vector>
+#include <map>
+
+std::vector<int> solution(std::string s) {
+    std::vector<int> answer;
+    std::map<char,int> map;
+    
+    for(int i=0; i<s.length(); i++)
+    {
+        if(map.find(s[i])!=map.end())
+        {
+            answer.push_back(i-map[s[i]]);
+            map[s[i]]=i;
+        }
+        else
+        {
+            answer.push_back(-1);
+            map.insert({s[i],i});
+        }
+    }
+    return answer;
+}
