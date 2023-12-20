@@ -1,0 +1,64 @@
+#include <string>
+#include <vector>
+
+std::vector<int> solution(std::vector<std::string> park, std::vector<std::string> routes) {
+    std::vector<int> answer;
+    int s_r, s_c;
+    
+    for(int i=0; i<park.size(); i++)
+        for(int j=0; j<park[i].size(); j++)
+            if(park[i][j]=='S') 
+            {s_r=i, s_c=j;}
+    
+    int new_r=s_r, new_c=s_c;
+    for(int k=0; k<routes.size(); k++)
+    {
+        char dir=routes[k][0];
+        int dist=routes[k][2]-48;
+        int m=1;
+        
+        if(dir=='N')
+        { 
+            m=1;
+            while(new_r-m>=0 && m<=dist)
+            {
+                if(park[new_r-m][new_c]=='X') break;
+                m++;
+            }
+            if(m>dist) new_r-=dist;
+        }
+        else if(dir=='S')
+        { 
+            m=1;
+            while(new_r+m <park.size() &&m<=dist)
+            {
+                if(park[new_r+m][new_c]=='X')break;
+                m++;
+            }
+            if(m>dist) new_r+=dist;
+        }
+        else if(dir=='W')
+        { 
+            m=1;
+            while(new_c-m>=0 && m<=dist)
+            {
+                if(park[new_r][new_c-m]=='X')break;
+                m++;
+            }
+            if(m>dist) new_c-=dist;
+        }
+        else if(dir=='E')
+        { 
+            if(new_c+dist >= park[0].size()) continue;
+            m=1;
+            while(new_c+m<park[0].size() && m<=dist)
+            {
+                if(park[new_r][new_c+m]=='X')break;
+                m++;
+            }
+            if(m>dist) new_c+=dist;
+        }
+    }
+    
+    return answer={new_r,new_c};
+}
