@@ -1,0 +1,48 @@
+#include <string>
+#include <vector>
+#include <map>
+#include <algorithm>
+
+std::vector<int> solution(std::vector<std::string> keymap, std::vector<std::string> targets) {
+    std::vector<int> answer(targets.size());
+    std::map<char,int> alphabet;
+    std::string advent;
+    
+    for(int i=0; i<targets.size(); i++)
+        advent.append(targets[i]);
+    std::sort(advent.begin(), advent.end());
+    advent.erase(std::unique(advent.begin(),advent.end()),advent.end());
+    
+    for(char c: advent)
+        alphabet.insert({c,1000});
+    
+    for(int j=0; j<keymap.size(); j++)
+    {
+        for(int k=0; k<keymap[j].length(); k++)
+        {
+            std::map<char,int>::iterator iter=alphabet.find(keymap[j][k]);
+            if(iter!=alphabet.end())
+                if(k+1 < iter->second) alphabet[iter->first]=k+1;
+        }
+    }
+    
+    for(int m=0; m<targets.size(); m++)
+    {
+        int sum=0;
+        for(int n=0; n<targets[m].length(); n++)
+        {
+            if(alphabet[targets[m][n]]!=1000)
+            {
+                sum+=alphabet[targets[m][n]];
+                answer[m]=sum;
+            }
+            else
+            {
+                answer[m]=-1;
+                break;
+            }
+        }
+    }
+    
+    return answer;
+}
