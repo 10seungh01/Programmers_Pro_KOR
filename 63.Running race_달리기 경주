@@ -1,0 +1,33 @@
+#include <string>
+#include <vector>
+#include <map>
+
+std::vector<std::string> solution(std::vector<std::string> players, std::vector<std::string> callings) {
+    std::vector<std::string> answer;
+
+    std::map<std::string,int> player_id;  //{name,id}
+    for(int i=0; i<players.size(); i++)
+        player_id[players[i]]=i;
+
+    std::map<int,int> id_rank, rank_id;  //{id,rank}, {rank,id}
+    for(int j=0; j<players.size(); j++)
+    {
+        id_rank[j]=j;
+        rank_id[j]=j;
+    }
+
+    for(int k=0; k<callings.size(); k++)
+    {
+        int id=player_id[callings[k]];
+        int rank=id_rank[id];
+        int pri_id=rank_id[rank-1];
+        id_rank[id]--;
+        id_rank[pri_id]++;
+        rank_id[rank]=pri_id;
+        rank_id[rank-1]=id;
+    }
+
+    for(auto e:rank_id)
+        answer.push_back(players[e.second]);
+    return answer;
+}
