@@ -1,0 +1,49 @@
+#include <string>
+#include <vector>
+#include <iostream>
+
+int solution(std::vector<int> bandage, int health, std::vector<std::vector<int>> attacks) {
+    int answer = 0;
+    int hp=health;
+    int suc=0;
+    int j=0;
+
+    for(int i=1; i<=attacks[attacks.size()-1][0]; i++)
+    {
+        if(j<attacks.size() && attacks[j][0]==i)
+        {
+            hp-=attacks[j][1];
+            suc=0;
+            j++;
+            std::cout<<hp<<" ";
+        }
+        else if(suc==bandage[0]-1)
+        {
+            if(hp+bandage[1]+bandage[2]>health)
+                hp=health;
+            else
+                hp+=(bandage[1]+bandage[2]);
+            suc=0;
+            std::cout<<hp<<" ";
+        }
+        else
+        {
+            if(hp+bandage[1]>health)
+            {
+                hp=health;
+                suc++;
+                std::cout<<hp<<" ";
+            }
+            else
+            {
+                hp+=bandage[1];
+                suc++;
+                std::cout<<hp<<" ";
+            }
+        }
+        if(hp<=0)
+            return -1;
+    }
+
+    return answer=hp;
+}
