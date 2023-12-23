@@ -1,0 +1,48 @@
+#include <vector>
+#include <queue>
+
+std::vector<int> solution(int m, int n, std::vector<std::vector<int>> picture) {
+    std::vector<int> answer(2);
+    std::vector<std::pair<int,int>> move={{-1,0},{1,0},{0,-1},{0,1}};
+    std::vector<std::vector<bool>> visited(m,std::vector<bool>(n,false));
+    std::queue<std::pair<int,int>> que;
+    int area=0, max=0;
+    
+    for(int i=0; i<m; i++)
+    {
+        for(int j=0; j<n; j++)
+        {
+            if(picture[i][j]!=0 && visited[i][j]==false)
+            {
+                area++;
+                int size=1;
+                que.push({i,j});
+                visited[i][j]=true;
+                
+                while(!que.empty())
+                {
+                    int r=que.front().first;
+                    int c=que.front().second;
+                    que.pop();
+                    for(int k=0; k<4; k++)
+                    {
+                        int new_r=r+move[k].first;
+                        int new_c=c+move[k].second;
+                        
+                        if(new_r>=0 && new_r<m && new_c>=0 && new_c<n &&
+                          visited[new_r][new_c]==false && picture[new_r][new_c]==picture[r][c])
+                        {
+                            que.push({new_r,new_c});
+                            visited[new_r][new_c]=true;
+                            size++;
+                                
+                        }
+                    }
+                }
+                max=std::max(max,size);
+            }
+        }
+    }
+    
+    return answer={area,max};
+}
