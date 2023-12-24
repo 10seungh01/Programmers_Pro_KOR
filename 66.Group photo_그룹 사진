@@ -1,0 +1,60 @@
+#include <string>
+#include <vector>
+#include <stack>
+#include <cmath>
+using namespace std;
+
+int way;
+vector<char> member={'A','C','F','J','M','N','R','T'};
+string stand="";
+bool visited[8];
+
+void input(int cnt, vector<string>& data)
+{
+    if(cnt==8)
+    {
+        int p1=0, p2=0;
+        bool pass=true;
+        for(int j=0; j<data.size(); j++)
+        {
+            for(int k=0; k<8; k++)
+            {
+                if(stand[k]==data[j][0]) p1=k;
+                if(stand[k]==data[j][2]) p2=k;
+            }
+            
+            if(data[j][3]=='=' && abs(p1-p2)-1!=data[j][4]-'0')
+            {pass=false; break;}
+            if(data[j][3]=='>' && abs(p1-p2)-1<=data[j][4]-'0')
+            {pass=false; break;}
+            if(data[j][3]=='<' && abs(p1-p2)-1>=data[j][4]-'0')
+            {pass=false; break;}
+        }
+        if(pass==true) way++;
+        return;
+    }
+    else
+    {
+        for(int i=0; i<8; i++)
+        {
+            if(visited[i]==false)
+            {
+                stand+=member[i];
+                visited[i]=true;
+                input(cnt+1, data);
+                visited[i]=false;
+                stand.erase(stand.begin()+cnt);
+            }
+        }
+    }
+}
+
+// 전역 변수를 정의할 경우 함수 내에 초기화 코드를 꼭 작성해주세요.
+int solution(int n, vector<string> data) {
+    way=0;
+    int cnt=0;
+    fill(visited,visited+8,false);
+    
+    input(cnt, data);
+    return way;
+}
