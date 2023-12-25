@@ -1,0 +1,17 @@
+#include <string>
+#include <vector>
+
+int solution(int n) {
+    int answer = 0;
+    std::vector<int> way(n+1,-1);
+    way[1]=1; way[2]=2;
+    
+    int i=3;
+    while(way[n]==-1)
+    {
+        way[i]=(way[i-1]+way[i-2])%1000000007;
+        i++;
+    }
+    
+    return answer=way[n];
+}
