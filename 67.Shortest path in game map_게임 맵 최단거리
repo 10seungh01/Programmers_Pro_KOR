@@ -1,0 +1,37 @@
+#include <vector>
+#include <queue>
+
+int solution(std::vector<std::vector<int> > maps)
+{
+    int min=10000;
+    std::vector<std::pair<int,int>> move={{-1,0},{1,0},{0,-1},{0,1}};
+    std::vector<std::vector<int>> distance(maps.size(), std::vector<int>(maps[0].size(),10000));
+    std::queue<std::pair<int,int>> que;
+    
+    que.push({0,0});
+    distance[0][0]=1;
+    
+    while(!que.empty())
+    {
+        int r=que.front().first;
+        int c=que.front().second;
+        que.pop();
+        
+        if(r==maps.size()-1 && c==maps[0].size()-1)
+            min>distance[r][c] ? min=distance[r][c] : min;
+        
+        for(int i=0; i<4; i++)
+        {
+            int new_r=r+move[i].first;
+            int new_c=c+move[i].second;
+            
+            if(new_r>=0 && new_r<maps.size() && new_c>=0 && new_c<maps[0].size() &&
+              maps[new_r][new_c]==1 && distance[new_r][new_c]>distance[r][c]+1)
+            {
+                distance[new_r][new_c]=distance[r][c]+1;
+                que.push({new_r,new_c});
+            }
+        }
+    }
+    return min==10000 ? -1 : min;
+}
