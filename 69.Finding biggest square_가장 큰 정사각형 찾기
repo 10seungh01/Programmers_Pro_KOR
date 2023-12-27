@@ -1,0 +1,23 @@
+#include <vector>
+
+int solution(std::vector<std::vector<int>> board)
+{
+    int answer = 1;
+    
+    bool is_all_zero=true;
+    for(int i=0; i<board.size(); i++)
+        for(int j=0; j<board[0].size(); j++)
+            if(board[i][j]==1) is_all_zero=false;
+    if(is_all_zero) return 0;
+
+    for(int r=1; r<board.size(); r++)
+        for(int c=1; c<board[0].size(); c++)
+            if(board[r][c]>0)
+            {
+                int area = std::min(std::min(board[r-1][c],board[r][c-1]),board[r-1][c-1]);
+                board[r][c]=area+1;
+                answer < board[r][c] ? answer=board[r][c] : answer;
+            }
+    
+    return answer*answer;
+}
