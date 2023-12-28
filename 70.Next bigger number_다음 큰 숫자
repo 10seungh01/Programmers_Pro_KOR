@@ -1,0 +1,39 @@
+#include <vector>
+#include <cmath>
+
+int solution(int n) {
+    int num=n;
+    int numof1=0;
+    std::vector<int> bin;
+    while(num>0)
+    {
+        if(num%2==1)
+        {
+            bin.push_back(1);
+            numof1++;
+        }
+        else bin.push_back(0);
+        num/=2;
+    }
+    
+    if(numof1==bin.size()) return n+1+n/2;
+    
+    if(n%4==1) return n+1;
+    
+    if(n%2==0)
+    {
+        int idx1=0;
+        while(bin[idx1]==0) idx1++;
+        int idx2=idx1;
+        while(bin[idx2]==1) idx2++;
+        int numof1=idx2-idx1;
+        return n+std::pow(2,idx1)+std::pow(2,numof1-1)-1;
+    }
+    
+    if(n%4==3)
+    {
+        int idx=0;
+        while(bin[idx]==1) idx++;
+        return n+1+std::pow(2,idx-1)-1;
+    }
+}
