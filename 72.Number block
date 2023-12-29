@@ -1,0 +1,26 @@
+#include <vector>
+
+int factor(int a) {
+    int memory=-1;
+	for (int i = 2; i*i <= a; i++)
+        if (a%i == 0) 
+        {
+            if(a/i > 10000000) 
+            { memory=i; continue;}
+            else return a/i;
+        }
+
+    return memory==-1 ? 1 : memory;
+}
+
+std::vector<int> solution(long long begin, long long end) {
+    std::vector<int> answer(end-begin+1,-1);
+    
+    for(int i=1; i<answer.size(); i++)
+        answer[i]=factor(begin+i);
+
+    if(begin==1) answer[0]=0;
+    else answer[0]=factor(begin);
+    
+    return answer;
+}
