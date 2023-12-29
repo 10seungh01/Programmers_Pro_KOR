@@ -1,0 +1,21 @@
+#include <string>
+#include <vector>
+
+long long solution(int n) {
+    long long answer = 0;
+    if(n==1) return 1%1234567;
+    if(n==2) return 2%1234567;
+    
+    long long num1=1, num2=2, num3;
+    
+    int i=2;
+    while(i!=n)
+    {
+        num3=(num1+num2)%1234567;
+        num1=num2;
+        num2=num3;
+        i++;
+    }
+    
+    return answer=num3;
+}
