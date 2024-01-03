@@ -1,0 +1,26 @@
+#include <string>
+#include <vector>
+
+std::string solution(std::string s) {
+    std::string answer="", str="", spc="";
+    int start=0;
+    int end=0;
+    
+    while(end<s.length() && start==end)
+    {
+        while(s[start]==' ') {start++; spc+=" ";}
+        end=start+1;
+        while(s[end]!=' ') end++;
+        str=s.substr(start,end-start);
+        
+        if(str[0]>90) str[0]-=32;
+        for(int i=1; i<str.length(); i++)
+            if(str[i]<=90) str[i]+=32;
+        answer=answer+spc+str;
+        
+        start=end;
+        spc="";
+        
+    }
+    return answer;
+}
