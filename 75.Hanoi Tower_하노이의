@@ -1,0 +1,19 @@
+#include <string>
+#include <vector>
+
+void move(int cur, int n, int next, std::vector<std::vector<int>> *ans)
+{
+    if(n)
+    {
+        move(cur, n-1, 6-cur-next, ans);
+        ans->push_back({cur,next});
+        move(6-cur-next, n-1, next, ans);
+    }
+}
+
+std::vector<std::vector<int>> solution(int n) {
+    
+    std::vector<std::vector<int>> answer;
+    move(1,n,3,&answer);
+    return answer;
+}
