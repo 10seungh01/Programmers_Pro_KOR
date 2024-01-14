@@ -1,0 +1,48 @@
+#include <iostream>
+#include <vector>
+#include <climits>
+
+std::vector<std::vector<int>> bring_v(int n, std::vector<std::vector<int>> road)
+{
+    std::vector<std::vector<int>> res;
+    for(int r=0; r<road.size(); r++)
+    {
+        if(road[r][0]==n)
+            res.push_back(road[r]);
+        else if(road[r][1]==n)
+            res.push_back({road[r][1], road[r][0], road[r][2]});
+    }
+    return res;
+}
+
+int solution(int N, std::vector<std::vector<int> > road, int K) {
+    int answer = 0;
+    std::vector<int> distance(N+1,INT_MAX);
+    distance[0]=-1; distance[1]=0;
+    
+    for(int i=0; i<N-1; i++)
+    {
+        for(int j=1; j<=N; j++)
+        {
+            if(distance[j]!=INT_MAX)
+            {
+                std::vector<std::vector<int>> v_list=bring_v(j,road);
+                for(int k=0; k<v_list.size(); k++)
+                {
+                    std::vector<int> vertex=v_list[k];
+                    if(distance[vertex[1]]>distance[j]+vertex[2])
+                    {
+                        distance[vertex[1]]=distance[j]+vertex[2];
+                        //std::cout<<vertex[1]<<"번의 거리 갱신: "<<distance[vertex[1]]<<std::endl;
+                    }
+                }
+            }
+        }
+    }
+    
+    for(int a=1; a<distance.size(); a++)
+        if(distance[a]<=K)
+            answer++;
+    
+    return answer;
+}
