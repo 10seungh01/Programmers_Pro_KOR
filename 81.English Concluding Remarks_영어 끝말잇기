@@ -1,0 +1,17 @@
+#include <string>
+#include <vector>
+#include <map>
+
+std::vector<int> solution(int n, std::vector<std::string> words) {
+    std::map<std::string, bool> map;
+    
+    map.insert({words[0],true});
+    for(int i=1; i<words.size(); i++)
+    {
+        if(words[i-1].back()==words[i].front() && map.find(words[i])==map.end())
+            map.insert({words[i],true});
+        else
+            return {i%n+1,i/n+1};
+    }
+    return {0,0};
+}
