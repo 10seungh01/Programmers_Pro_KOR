@@ -1,0 +1,26 @@
+def solution(cacheSize, cities):
+    answer = 0
+    recent=0
+    cache_use={}
+
+    if(cacheSize==0):
+        return 5*len(cities)
+
+    for i in range(len(cities)):
+        city=cities[i].upper()
+        recent+=1
+
+        if(city in cache_use):
+            answer+=1
+            cache_use[city]=recent
+        else:
+            answer+=5
+
+            if(len(cache_use)>=cacheSize):
+                mv=min(cache_use.values())
+                mk=[k for k,v in cache_use.items() if v==mv]
+                del cache_use[(mk[0])]
+
+            cache_use[city]=recent
+
+    return answer
